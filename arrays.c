@@ -1,21 +1,23 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<math.h>
 
 void sort_one_zero(int* arr);
 void bubble_sort(int* arr);
 void swap(int* a, int* b);
 void sort_odd_even(int *arr);
-int most_accure_value(int* arr, int* accurence);
+int most_accure_value(int* arr);
+void print_array(int* arr);
 
-#define SIZE 8
+#define SIZE 5
 
 int main()
 {
-	int i;
+	int i, accurence;
 	int arr[SIZE] = {0,1,0,1,0};
 	int arr2[SIZE];
 
-	printf("please enter 8 numbers\n");
+	printf("please enter 5 numbers\n");
 
 	for(i = 0; i < SIZE; i++)
 	{
@@ -24,13 +26,24 @@ int main()
 
 /*	
 	sort_one_zero(arr);  
-	bubble_sort(arr2);
 */
+	bubble_sort(arr2);
+	printf("sorted array:  ");
+	print_array(arr2);
 	sort_odd_even(arr2);
+	printf("\nsort_odd_even:  ");
+	print_array(arr2);
+	printf("\nmost_accure_value = %d\n", most_accure_value(arr2));
+
+}
+
+void print_array(int* arr)
+{
+	int i;
 
 	for(i = 0; i < SIZE; i++)
 		{
-		printf("%d ", arr2[i]);
+		printf("%d ", arr[i]);
 		}
 	printf("\n");
 }
@@ -79,12 +92,12 @@ void bubble_sort(int* arr)
 
 void sort_odd_even(int *arr)
 {
-	int j, flag = 0;
+	int i, j, flag = 0;
 		
-		while(1)
+		for(i = 0; i < SIZE; i++)
 		{
 			flag = 0;
-			for(j = 0; j < SIZE - 1; j++)
+			for(j = 0; j < SIZE - i - 1; j++)
 			{
 				if((arr[j] % 2) > 0 && (arr[j+1] % 2) == 0)
 				{
@@ -96,8 +109,29 @@ void sort_odd_even(int *arr)
 		}
 }
 
-int most_accure_value(int* arr, int* accurence)
+int most_accure_value(int* arr)
 {
+	int i = 0,temp_accurence = 1, max_accurence = 1, temp_num, max_num;
 
+	bubble_sort(arr);
+
+	while(i < SIZE)
+	{
+		temp_num = arr[i++];
+		if(temp_num == arr[i])
+			temp_accurence++;
+		else
+		{
+			
+			if(temp_accurence > max_accurence)
+			{
+			max_accurence = temp_accurence;
+			max_num = temp_num;	
+			}
+			temp_accurence = 1;
+		}
+		
+	}
+	return max_num;
 }
 	
