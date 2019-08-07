@@ -2,17 +2,18 @@
 #include<stdlib.h>
 #include<time.h>
 
-void print_board(char board[][]);
-void update_board(char board[][], int arr[]);
-
 #define ROWS 5
 #define COLUMNS 10
 #define SIZE 6
 
+void print_board(char board[ROWS][COLUMNS]);
+void update_board(char board[ROWS][COLUMNS], int arr[]);
+int check_dup(int* arr, int num);
+
 int main()
 {
 	char board[ROWS][COLUMNS];
-	int random_numbers[SIZE], temp_rand;
+	int temp_rand, i, j, random_numbers[SIZE] = {0,0,0,0,0,0};
 
 	/* initialize board */
 	for(i = 0; i < ROWS; i++) 
@@ -20,35 +21,52 @@ int main()
 			board[i][j] = '-';
 
 	srand(time(0));
-
+	i = 0;
 	while(i < SIZE)
 	{
-		temp_rand = rand() % 50;
-		/*
-		check if exist
-			/*continue;
+		temp_rand = rand() % 49 + 1;
+		if(check_dup(random_numbers, temp_rand) == 1)
+			continue;
 		else
 			random_numbers[i++] = temp_rand;
-		*/
+
 	}
-	update_board(board);
+	printf("random_numbers: ");
+	for(i = 0; i < SIZE; i++)
+		printf("%d ", random_numbers[i]);
+
+	printf("\n\n");
+	update_board(board, random_numbers);
 	print_board(board);
 
 }
 
-void update_board(char board[][], int arr[])
+int check_dup(int* arr, int num)
 {
-	int row, col;
-	
+	int i = 0;
+
+	while(arr[i] != 0)
+	{	
+		if(arr[i++] == num)
+			return 1;
+	}
+	return 0;
+}
+
+void update_board(char board[ROWS][COLUMNS], int arr[])
+{
+	int row, col, i;	
+
 	for(i = 0; i < SIZE; i++)
 	{
-		row = arr[i] <= 10 ? arr[i] : arr[i] / 10;
-		col = arr[i] <= 10 ? : arr[i] % 10;
+		arr[i] -= 1;
+		row = arr[i] <= 10 ? 0 : arr[i] / 10;
+		col = arr[i] <= 10 ? arr[i] : arr[i] % 10;
 		board[row][col] = '+';
 	}
 }
 
-void print_board(char board[][COLUMNS])
+void print_board(char board[ROWS][COLUMNS])
 {
 	int i, j;
 	
