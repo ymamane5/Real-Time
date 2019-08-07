@@ -1,7 +1,12 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<math.h>
 
 int* convert_to_array(int, int*);
+int palindrom(int num);
+int is_ascending(int num);
+int* num_divisors(int num, int* divisors_count);
+
 
 int main()
 {
@@ -43,3 +48,39 @@ while(num > 0)
 arr[10] = lengh;
 return arr;
 }
+
+int is_ascending(int num)
+{
+
+do {
+	prev = num % 10;
+	num /= 10;
+	if((num % 10) > prev)
+		return 0;
+}
+while(num > 0);
+
+return 1;
+
+}
+
+int* num_divisors(int num, int* divisors_count)
+{
+int i, j = 0, num_sqrt = (int)sqrt((double)num);
+int* arr = malloc(num_sqrt * sizeof(int));
+
+for(i = 2; i < num_sqrt; i++)
+	{
+	if(num % i == 0)
+		{
+		arr[j++] = i;
+		arr[j++] = num / i;
+		}
+	}
+if(sqrt((double)num) % 1 == 0) 
+	arr[j++] = sqrt((double)num);
+
+*divisors_count = j;
+return arr;
+}
+
