@@ -8,7 +8,6 @@ int main()
 	char s1[8] = "ABBCD", s2[8] = "QB";
 	printf("%s\n", squeez(s1, s2));
 
-	getchar();
 	return 0;
 }
 
