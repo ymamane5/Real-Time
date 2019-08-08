@@ -4,13 +4,37 @@
 #define SIZE 16
 
 char* squeez(char* s1, char* s2);
+int location(char* s1, char* s2);
 
 int main()
 {
-	char s1[SIZE] = "ABBCDQRRQQQ", s2[SIZE] = "QB";
-	printf("%s\n", squeez(s1, s2));
+	char s1[SIZE] = "ABBCDQRRQQQ", s2[SIZE] = "QR";
+	
+	printf("squeezed: %s\n", squeez(s1, s2));
+	printf("location: %d\n", location(s1, s2));
 
 	return 0;
+}
+
+int location(char* s1, char* s2)
+{
+	int i, j;
+
+	if (strlen(s1) == 0 || strlen(s2) == 0)
+		return -1;
+
+	for (i = 0; i <= strlen(s1); i++)
+	{
+		j = 1;
+		if (s1[i] == s2[0])
+		{
+			while (s1[i + j] == s2[j] && s1[i + j] != '\0')
+				j++;
+			if (s2[j] == '\0')
+				return i;
+		}
+	}
+	return -1;
 }
 
 char* squeez(char* s1, char* s2)
