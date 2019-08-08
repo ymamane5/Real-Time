@@ -111,22 +111,21 @@ void sort_odd_even(int *arr)
 
 int most_accure_value(int* arr)
 {
-	int i, j ,temp_accurence = 1, max_accurence = 1, temp_num, max_num;
+	int i, j ,temp_accurence = 1, max_accurence = 1, max_num;
 
 	bubble_sort(arr);
 
 	for(i = 0; i < SIZE; i++)
 	{
-		temp_num = arr[i];
 		for(j = i + 1; j < SIZE; j++)
 		{
-			if(arr[i] == temp_num)
+			if(arr[i] == arr[j])
 				temp_accurence++;
 		}
 		if(temp_accurence > max_accurence)
 		{
 			max_accurence = temp_accurence;
-			max_num = temp_num;
+			max_num = arr[i];
 		}
 		temp_accurence = 1;		
 	}
