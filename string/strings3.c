@@ -8,10 +8,11 @@ int location(char* s1, char* s2);
 
 int main()
 {
-	char s1[SIZE] = "ABBCDQRRQQQ", s2[SIZE] = "QR";
+	char s1[SIZE] = "ABBCDQRRQQQCTT", s2[SIZE] = "QR";
 	
-	printf("squeezed: %s\n", squeez(s1, s2));
+	printf("s1 = %s\ns2 = %s\n", s1, s2);
 	printf("location: %d\n", location(s1, s2));
+	printf("squeezed: %s\n", squeez(s1, s2));
 
 	return 0;
 }
