@@ -1,11 +1,13 @@
 #include<stdio.h>
 #include<string.h>
 
+#define SIZE 16
+
 char* squeez(char* s1, char* s2);
 
 int main()
 {
-	char s1[16] = "ABBCDQRRQQQ", s2[16] = "QB";
+	char s1[SIZE] = "ABBCDQRRQQQ", s2[SIZE] = "QB";
 	printf("%s\n", squeez(s1, s2));
 
 	return 0;
