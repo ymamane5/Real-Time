@@ -5,7 +5,7 @@ char* squeez(char* s1, char* s2);
 
 int main()
 {
-	char s1[8] = "ABBCD", s2[8] = "QB";
+	char s1[16] = "ABBCDQRRQQQ", s2[16] = "QB";
 	printf("%s\n", squeez(s1, s2));
 
 	return 0;
@@ -35,16 +35,9 @@ char* squeez(char* s1, char* s2)
 				i++;
 
 			differ = i - first_index;
-			for (j = 0; j < differ; j++)
+			for (j = 0; s1[first_index + differ] != '\0'; j++)
 			{
-				s1[first_index] = s1[first_index + differ];
-				if (s1[first_index + differ] == '\0')
-				{
-					i = first_index;
-					break;
-				}
-
-				first_index++;
+				s1[first_index++] = s1[first_index + differ];
 			}
 			s1[first_index] = '\0';
 		}
