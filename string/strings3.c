@@ -1,14 +1,17 @@
 #include<stdio.h>
 #include<string.h>
 
-#define SIZE 16
+#define SIZE 32
 
 char* squeez(char* s1, char* s2);
 int location(char* s1, char* s2);
 
 int main()
 {
-	char s1[SIZE] = "ABBCDQRRQQQCTT", s2[SIZE] = "QR";
+	char s1[SIZE], s2[SIZE];
+
+	printf("please enter 2 strings");
+	scanf("%s%s", s1,s2);
 	
 	printf("s1 = %s\ns2 = %s\n", s1, s2);
 	printf("location: %d\n", location(s1, s2));
@@ -21,8 +24,10 @@ int location(char* s1, char* s2)
 {
 	int i, j;
 
-	if (strlen(s1) == 0 || strlen(s2) == 0)
+	if ( s1 == NULL || s2 == NULL) {
+		printf("not valid strins!");
 		return -1;
+	}
 
 	for (i = 0; i <= strlen(s1); i++)
 	{
@@ -43,9 +48,11 @@ char* squeez(char* s1, char* s2)
 	int i, j, first_index, differ, finish = 0;
 	char temp, toDelete;
 
-	if(s1 == null || s2 == null)
-		return null;
-	
+	if ( s1 == NULL || s2 == NULL) {
+		printf("not valid strins!");
+		return NULL;
+	}
+
 	toDelete = s2[0];
 	for (i = 1; i < strlen(s2); i++)
 	{
