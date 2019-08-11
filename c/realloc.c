@@ -10,6 +10,13 @@ int main()
 
 	printf("please enter array size:\n");
 	scanf("%d", &capacity);
+	
+	while(capacity <= 0)
+	{
+	printf("please enter positive number\n");
+	scanf("%d", &capacity);
+	}
+
 	arr = malloc(sizeof(int) * capacity);
 
 	printf("please enter numbers\n");
@@ -32,11 +39,11 @@ int* insert(int* num, int* pos, int* capacity, int* arr)
 
 	if(*pos >= *capacity)
 	{
-		temp = realloc(arr, (*capacity) * 2);
+		temp = realloc(arr, (*capacity) + 1);
 		if(temp != NULL)
 		{
 			arr = temp;
-			*capacity *= 2;
+			(*capacity)++;
 		}
 	}
 	
