@@ -5,8 +5,8 @@ int* insert(int* num, int* pos, int* capacity, int* arr);
 
 int main()
 {
-	int capacity, num, index, i = 0;
-	int *p, *arr;
+	int capacity, num, index, pos = 0, i;
+	int *arr;
 
 	printf("please enter array size:\n");
 	scanf("%d", &capacity);
@@ -22,14 +22,15 @@ int main()
 	printf("please enter numbers\n");
 	do{
 		scanf("%d", &num);
-		insert(&num, &i, &capacity, arr);
+		insert(&num, &pos, &capacity, arr);
 	}
 	while(num > 0);
 	
 	
-	for(i = 0; i < capacity; i++)
+	for(i = 0; i < pos; i++)
 		printf("%d ", arr[i]);
 
+	free(arr);
 }
 
 int* insert(int* num, int* pos, int* capacity, int* arr)
@@ -37,14 +38,19 @@ int* insert(int* num, int* pos, int* capacity, int* arr)
 	
 	int* temp;
 
+	if(*num == -1)
+		return arr;
+
 	if(*pos >= *capacity)
 	{
-		temp = realloc(arr, (*capacity) + 1);
+		temp = realloc(arr, (*capacity) * 2);
 		if(temp != NULL)
 		{
 			arr = temp;
-			(*capacity)++;
+			*capacity *= 2;
 		}
+		else
+			return arr;
 	}
 	
 	arr[*pos] = *num;
