@@ -43,6 +43,9 @@ char* squeez(char* s1, char* s2)
 	int i, j, first_index, differ, finish = 0;
 	char temp, toDelete;
 
+	if(s1 == null || s2 == null)
+		return null;
+	
 	toDelete = s2[0];
 	for (i = 1; i < strlen(s2); i++)
 	{
