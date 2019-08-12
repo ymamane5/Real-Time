@@ -1,13 +1,13 @@
 #ifndef DA_H
 #define DA_H
 
-struct DA {
+typedef struct DA {
 	int* arr;
 	int capacity;
 	int index;
-};
+}DA;
 
-void create_DA(int);
+DA* create_DA(int capacity);
 void printDA(DA* da);
 int insert(DA* da, int num);
 void destroy(DA* da);
