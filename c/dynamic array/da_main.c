@@ -8,33 +8,27 @@ int main()
 	DA* da_1;
 	
 	printf("please enter array size:\n");
-	scanf_s("%d", &capacity);
-
-	da_1 = create_DA(capacity);
+	scanf("%d", &capacity);
 
 	while (capacity <= 0)
 	{
 		printf("please enter positive number\n");
-		scanf_s("%d", &capacity);
+		scanf("%d", &capacity);
 	}
 
-	printf("capacity = %d\nindex = %d", da_1->capacity, da_1->index);
+	da_1 = create_DA(capacity);
+	if(da_1 == NULL)
+	{
+		printf("faild to allocate memory, exiting..\n");
+		exit(0);
+	}
 
 	printf("please enter numbers\n");
 	do {
-		scanf_s("%d", &num);
+		scanf("%d", &num);
 		insert(da_1, num);
 	} while (num > 0);
 
-
-	for (i = 0; i < da_1->index; i++)
-		printf("%d ", da_1->arr[i]);
-	
-
-	/*getch();*/
-	free(da_1->arr);
+	printDA(da_1);
 	destroy(da_1);
 }
-
-
-
