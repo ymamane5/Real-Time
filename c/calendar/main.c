@@ -38,5 +38,9 @@ int main()
 	free(da_1->arr);
 	destroy(da_1);
 	*/
+	free(cal->day);
+	free(cal);
+
+	
 	return 0;
 }
