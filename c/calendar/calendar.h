@@ -17,5 +17,8 @@ typedef struct CALENDAR {
 Calendar_t* creatAD(int); 
 void printDay(Calendar_t*);
 int insertMeeting(Calendar_t* cal, float begin, float end, int room);
+int deleteMeeting(Calendar_t* cal, int begin);
+Meeting_t* findMeeting(Calendar_t* cal, int begin);
+int detroyAD(Calendar_t* cal);
 
 #endif
