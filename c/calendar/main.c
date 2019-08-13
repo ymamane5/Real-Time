@@ -7,25 +7,13 @@ int main()
 	Calendar_t* cal;
 
 	cal = creatAD();
-	insertMeeting(cal, 4.5, 6.5, 205);
+	if (insertMeeting(cal, 4.5, 6.5, 205) == 1)
+		printf("added sucssesfully");
 
-	printDay(&(cal->day));
+	printDay(cal);
 	/*
 	int i, capacity, num;
 	DA* da_1;
-	
-	printf("please enter array size:\n");
-	scanf_s("%d", &capacity);
-
-	da_1 = create_DA(capacity);
-
-	while (capacity <= 0)
-	{
-		printf("please enter positive number\n");
-		scanf_s("%d", &capacity);
-	}
-
-	printf("capacity = %d\nindex = %d", da_1->capacity, da_1->index);
 
 	printf("please enter numbers\n");
 	do {
@@ -42,6 +30,7 @@ int main()
 	free(da_1->arr);
 	destroy(da_1);
 	*/
+	return 0;
 }
 
 
