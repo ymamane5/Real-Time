@@ -29,22 +29,21 @@ void printDA(DA* da);
 int main()
 {
 	FILE* fp;
-	fopen_s(&fp, "lastRows.txt", "r");
+	fp = fopen("test_file.txt", "r");
 
 	if (fp == NULL)
 	{
 		printf("cannot open file\n");
 		exit(0);
 	}
-	/*
-		lastNLines(fp, 2);
-		removeSpaces(fp);
-		countletters(fp);
-		*/
-	countWords(fp);
+	
+	lastNLines(fp, 2);
+	//removeSpaces(fp);
+	//countletters(fp);
+	//countWords(fp);
 
 	fclose(fp);
-	getch();
+	//getch();
 
 	return 0;
 }
@@ -53,6 +52,7 @@ void countWords(FILE* fp)
 {
 	DA* da = createDA(2);
 	char buff[MAX_WORD];
+	int i;
 
 	fseek(fp, 0, SEEK_SET);
 
@@ -61,6 +61,14 @@ void countWords(FILE* fp)
 		insert(da, buff);
 		//printf("%s\n", buff);
 	}
+
+	for(i = da->index; i >= 0; i--)
+	{
+//		free(da->arr[i]->str);
+//		free(da->arr[i]);
+	}
+//	free(da->arr);
+	free(da);
 
 }
 
@@ -84,11 +92,12 @@ void insert(DA* da, char* buff)
 	{
 		if (da->index >= da->capacity)
 		{
-			temp = realloc(da->arr, (da->capacity) * 2);
+			printf("realloc\n");
+			temp = realloc(da->arr, (da->capacity) + 3);
 			if (temp != NULL)
 			{
 				da->arr = temp;
-				da->capacity *= 2;
+				(da->capacity) += 3;
 			}
 		}
 		da->arr[da->index] = malloc(sizeof(word_t));
@@ -166,24 +175,35 @@ void lastNLines(FILE* fp, int n)
 	int i = 0;
 	long int* arr = (long int*)malloc(sizeof(int) * n);
 	char buf[MAX];
+	long int temp;
+
+	fseek(fp, 0, SEEK_SET);
 
 	while (1)
 	{
-		arr[i % n] = ftell(fp);
-		i++;
-		if (fgets(buf, MAX, fp) == NULL)
+		temp = ftell(fp);
+		fgets(buf, MAX, fp);
+		if (feof(fp))
 			break;
+		arr[i % n] = temp;
+		i++;
 	}
-	fseek(fp, 0, SEEK_SET);
-	printf("array:\n%ld\n%ld\n", arr[0], arr[1]);
+	
 
+	for (i = 0; i < n; i++)
+	{
+		if(arr[i] < temp)
+		{
+			temp = arr[i];
+		}
+	}
+
+	fseek(fp, temp, SEEK_SET);
 	printf("last lines:\n");
 	for (i = 0; i < n; i++)
 	{
-		fseek(fp, arr[i], SEEK_SET);
 		fgets(buf, MAX, fp);
 		printf("%s", buf);
-		/*printf("%ld\n", arr[i]);*/
 	}
 
 }
