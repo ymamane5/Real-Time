@@ -24,6 +24,7 @@ void countletters(FILE* fp);
 void countWords(FILE* fp);
 void insert(DA* da, char* buff);
 DA* createDA(int capacity);
+void printDA(DA* da);
 
 int main()
 {
@@ -50,7 +51,7 @@ int main()
 
 void countWords(FILE* fp)
 {
-	DA* da = createDA(3);
+	DA* da = createDA(2);
 	char buff[MAX_WORD];
 
 	fseek(fp, 0, SEEK_SET);
@@ -64,16 +65,40 @@ void countWords(FILE* fp)
 }
 
 
-
 void insert(DA* da, char* buff)
 {
+	int i, addWord = 1;
+	word_t** temp;
 
-	da->arr[da->index] = (word_t*)malloc(sizeof(word_t));
-	da->arr[da->index]->str = malloc(sizeof(char) * strlen(buff));
+	for (i = 0; i < da->index; i++)
+	{
+		if (strcmp(buff, da->arr[i]->str) == 0)
+		{
+			da->arr[i]->count++;
+			addWord = 0;
+			break;
+		}
+	}
 	
-	strcpy((da->arr[da->index])->str, buff);
-	printf("da[%d] = %s\n",da->index, (da->arr[da->index])->str);
-	da->index++;
+	if (addWord == 1)
+	{
+		if (da->index >= da->capacity)
+		{
+			temp = realloc(da->arr, (da->capacity) * 2);
+			if (temp != NULL)
+			{
+				da->arr = temp;
+				da->capacity *= 2;
+			}
+		}
+		da->arr[da->index] = malloc(sizeof(word_t));
+		da->arr[da->index]->str = malloc(sizeof(char) * strlen(buff));
+		da->arr[da->index]->count = 0;
+
+		strcpy((da->arr[da->index])->str, buff);
+		printf("%s\n", (da->arr[da->index])->str);
+		da->index++;
+	}
 }
 
 DA* createDA(int capacity)
@@ -102,8 +127,8 @@ void countletters(FILE* fp)
 	{
 		for (i = 0; buff[i] != 0; i++)
 		{
-			if (buff[i] < 123 && buff[i] > 64)
-				arr[buff[i] - 65]++;
+			if (buff[i] <= 'z' && buff[i] >= 'A')
+				arr[buff[i] - 'A']++;
 		}
 	}
 
@@ -161,4 +186,14 @@ void lastNLines(FILE* fp, int n)
 		/*printf("%ld\n", arr[i]);*/
 	}
 
+}
+
+void printDA(DA* da)
+{
+	int i;
+
+	for (i = 0; i < da->index; i++)
+	{
+		printf("%s   %d\n", da->arr[i]->str, da->arr[i]->count);
+	}
 }
