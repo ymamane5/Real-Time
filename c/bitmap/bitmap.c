@@ -1,10 +1,11 @@
 #include<stdio.h>
+#include<stdlib.h>
 #include "bitmap.h"
 
 
 Bitmap* createBitmap(int size)
 {
-	Bitmap* temp = malloc(sizeof(Bitmap));
+	Bitmap* temp = (Bitmap*)malloc(sizeof(Bitmap));
 	int sizeUp = size / 8;
 
 	if (size < 0)
@@ -20,7 +21,7 @@ Bitmap* createBitmap(int size)
 	{
 		sizeUp = size / 8 + 1;
 	}
-	temp->m_arr = calloc(sizeof(char) * sizeUp);
+	temp->m_arr = calloc(sizeUp, sizeof(char));
 	if (temp->m_arr == NULL)
 	{
 		free(temp);
@@ -80,7 +81,7 @@ int isBit(Bitmap* map, int location)
 		return -1;
 	}
 	mask <<= offset;
-	return (map->m_arr[byteNum] | mask) > 0 ? 1 : 0;
+	return (map->m_arr[byteNum] & mask) > 0 ? 1 : 0;
 }
 
 void printBitmap(Bitmap* map)
@@ -98,5 +99,10 @@ void printBitmap(Bitmap* map)
 		printf("  ");
 		mask = 1;
 	}
+	for (j = 0; j < map->m_size % 8; j++)
+		{
+			printf("%c", (map->m_arr[i] & mask) > 0 ? '1' : '0');
+			mask <<= 1;
+		}
 	printf("\n");
 }
