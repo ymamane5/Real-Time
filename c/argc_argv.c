@@ -7,6 +7,11 @@ int isString(char* str);
 
 int main(int argc, char* argv[])
 {
+	if(argc < 3)
+	{
+		printf("ilegal number of parameters, exiting..\n");
+		exit(0);
+	}
 	if(isNumber(argv[1]) == 1 && isString(argv[2]) == 1)
 	{
 		printf("%s %s\n", argv[1], argv[2]);
