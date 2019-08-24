@@ -7,7 +7,7 @@ unsigned char* rotateN(unsigned char x, int n)
 	int temp, i;
 	unsigned char mask = 1;
 	unsigned char* y;
-	y = malloc(1, sizeof(char));
+	y = malloc(sizeof(char));
 	*y = x;
 
 	for (i = 0; i < n; i++)
@@ -23,7 +23,7 @@ unsigned char* rotateN(unsigned char x, int n)
 unsigned char* invertChar(unsigned char x)
 {
 	unsigned char* y;
-	y = malloc(1, sizeof(char));
+	y = malloc(sizeof(char));
 
 	*y = ~x;
 	return y;
