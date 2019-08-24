@@ -13,8 +13,8 @@ int main()
 		switch (input)
 		{
 			case 1: 
-				printf("Please enter char");
-				scanf("%c", &x);
+				printf("Please enter char\n");
+				scanf("\n%c", &x);
 				printf("x = ");
 				char2bin(x);
 				printf("x inverted = ");
@@ -23,7 +23,7 @@ int main()
 
 			case 2:
 				printf("Please enter char\n");
-				scanf("%c", &x);
+				scanf("\n%c", &x);
 				printf("Enter positions to rotate:\n");
 				scanf("%d", &rotate);
 				printf("x = ");
