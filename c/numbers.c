@@ -5,7 +5,10 @@
 int* convert_to_array(int, int*);
 int palindrom(int num);
 int is_ascending(int num);
-int* num_divisors(int num, int* divisors_count);
+int* num_divisors(int num, int* arrSize);
+int isPerfect(int num);
+int reverse(int num);
+int isPrime(int num);
 
 
 int main()
@@ -16,8 +19,26 @@ int main()
 		printf("please enter number\n");
 		scanf("%d", &num);
 		printf("\palindrom check = %d\nis_ascending = %d\n", palindrom(num), is_ascending(num));
+		printf("isPerfect = %d\n", isPerfect(num));
+		printf("reverse = %d\n", reverse(num));
+		printf("isPrime = %d\n", isPrime(num));
+
 	} while (num != -1);
 
+}
+
+int reverse(int num)
+{
+	int res = 0;
+
+	num = abs(num);
+	while (num > 0)
+	{
+		res *= 10;
+		res += num % 10;
+		num /= 10;
+	}
+	return res;
 }
 
 int palindrom(int num)
@@ -49,7 +70,7 @@ int* convert_to_array(int num, int* arr)
 	arr[10] = lengh;
 	return arr;
 }
-
+	
 int is_ascending(int num)
 {
 	int prev;
@@ -65,11 +86,12 @@ int is_ascending(int num)
 
 }
 
-int* num_divisors(int num, int* divisors_count)
+int* num_divisors(int num, int* arrSize)
 {
-	int i, j = 0, num_sqrt = (int)sqrt((double)num);
+	int i, j = 1, num_sqrt = ceilf(sqrt((double)num)), sum = 0;
 	int* arr = malloc(num_sqrt * sizeof(int));
 
+	arr[0] = 1;
 	for (i = 2; i < num_sqrt; i++)
 	{
 		if (num % i == 0)
@@ -78,9 +100,45 @@ int* num_divisors(int num, int* divisors_count)
 			arr[j++] = num / i;
 		}
 	}
-	if (sqrt((double)num) - (int)sqrt((double)num) == 0)
+	if (floorf(sqrt(num)) == sqrt(num))
 		arr[j++] = sqrt((double)num);
 
-	*divisors_count = j;
+	*arrSize = j;
+	
 	return arr;
+
+	
+}
+
+int isPrime(int num)
+{
+	int i, num_sqrt = ceilf(sqrt((double)num));
+	
+	for (i = 2; i < num_sqrt; i++)
+	{
+		if (num % i == 0)
+		{
+			return 0;
+		}
+	}
+
+	return 1;
+}
+
+int isPerfect(int num)
+{
+	int sum = 0, i, size, num_sqrt = ceilf(sqrt((double)num));
+	int* arr = malloc(sizeof(int) * num_sqrt);
+	
+	arr = num_divisors(num, &size);
+	
+	for (i = 0; i < size; i++)
+	{
+		/*printf("%d ", arr[i]);*/
+		sum += arr[i];
+	}
+	if (sum == num)
+		return 1;
+	else
+		return 0;
 }
