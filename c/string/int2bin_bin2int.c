@@ -16,36 +16,47 @@ int main()
 	printf("select operation:\n1. int2bin\n2. bin2int");
 	scanf("%d", &selection);
 
-	if(selection == 1)
+	if (selection == 1)
 	{
 
 		printf("please enter number: \n");
 		scanf("%d", &num);
 
 		do {
-			printf("binary sequence is: %s\n",int2bin(num, arr));
+			printf("binary sequence is: %s\n", int2bin(num, arr));
 			printf("please enter number: \n");
 			scanf("%d", &num);
-		}
-		while(num >= 0);
+		} while (num >= 0);
 	}
 
-	else if(selection == 2)
+	else if (selection == 2)
 	{
 		printf("please enter binary sequence: \n");
 		scanf("%s", arr);
-		if(check_sequence(arr) == 0)
-			exit(0);
+		if (check_sequence(arr) == 0)
+		{
+			do {
+				printf("please enter valid sequnce\n");
+				scanf("%s", arr);
+			} while (check_sequence(arr) == 0);
+		}
 
 		do {
-			printf("the number is: %d\n",bin2int(arr));
+			printf("the number is: %d\n", bin2int(arr));
 			printf("please enter binary sequence: \n");
 			scanf("%s", arr);
-		}
-		while(arr[0] != '-' && check_sequence(arr) == 1);
+			if (check_sequence(arr) == 0)
+			{
+				do {
+					printf("please enter valid sequnce\n");
+					scanf("%s", arr);
+				} while (check_sequence(arr) == 0);
+			}
+
+		} while (arr[0] != '-');
 	}
 
-	
+
 }
 
 void swap(char* a, char* b)
@@ -55,30 +66,32 @@ void swap(char* a, char* b)
 	*b = temp;
 }
 
-void reverseStr(char* str) 
-{ 
-    int i, length = strlen(str); 
-  
-    for (i = 0; i < length / 2; i++) 
-        swap(&str[i], &str[length - i - 1]); 
-} 
+void reverseStr(char* str)
+{
+	int i, length = strlen(str);
+
+	for (i = 0; i < length / 2; i++)
+		swap(&str[i], &str[length - i - 1]);
+}
 
 char* int2bin(int num, char* arr)
 {
 	int i;
 
-	if(num == 0) 
+	num = abs(num);
+	
+	if (num == 0)
 	{
 		arr[0] = '0';
 		arr[1] = '\0';
 		return arr;
 	}
 
-	
 
-	for(i = 0; num > 0; i++, num /= 2)
+
+	for (i = 0; num > 0; i++, num /= 2)
 	{
-		arr[i] = (num % 2 == 0) ? '0' : '1'; 
+		arr[i] = (num % 2 == 0) ? '0' : '1';
 	}
 	arr[i] = '\0';
 	reverseStr(arr);
@@ -89,9 +102,9 @@ int bin2int(char* arr)
 {
 	int sum = 0, base = 1, i, length = strlen(arr);
 
-	for(i = length - 1; i >= 0; i--)
+	for (i = length - 1; i >= 0; i--)
 	{
-		if(arr[i] == '1')
+		if (arr[i] == '1')
 		{
 			sum += base;
 		}
@@ -103,11 +116,14 @@ int bin2int(char* arr)
 
 int check_sequence(char* arr)
 {
-	int i;
+	int i = 0;
 
-	for(i = 0; arr[i] != '\0'; i++)
+	if (arr[0] == '-')
+		i++;
+
+	for (; arr[i] != '\0'; i++)
 	{
-		if(arr[i] != '0' && arr[i] != '1')
+		if (arr[i] != '0' && arr[i] != '1')
 			return 0;
 	}
 	return 1;
