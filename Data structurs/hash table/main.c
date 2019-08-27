@@ -34,7 +34,7 @@ int main()
 
 	insert_test(myHash);
 
-	printf("found: %s\n", (char*)hashfind(myHash, "key7"));
+	//printf("found: %s\n", (char*)hashfind(myHash, "key7"));
 	
 }
 
@@ -42,7 +42,7 @@ void insert_test(hash* myHash)
 {
 	char* str = "abcd";
 	char* str2 = "abcde";
-
+	
 	insert(myHash, str, "value1");
 	insert(myHash, str2, "value2");
 	insert(myHash, "key3", "value3");
@@ -50,29 +50,19 @@ void insert_test(hash* myHash)
 	insert(myHash, "key5", "value5");
 	insert(myHash, "key6", "value6");
 	insert(myHash, "key7", "value7");
+	insert(myHash, "key7", "value7");
 
+
+	printf("hash->arr[4]->key = %s\n", (char*)myHash->arr[4]->key);
+	printf("hash->arr[4-2]->key = %s\n", (char*)myHash->arr[4]->next->key);
+	printf("hash->arr[4-3]->key = %s\n", (char*)myHash->arr[4]->next->next->key);
 
 	//printf("myHash->arr[3]->value = %s\n", (char*)(myHash->arr[3]->value));
 	//printf("myHash->arr[4]->value = %s\n", (char*)(myHash->arr[4]->value));
 	//printf("myHash->arr[4(2)]->value = %s\n", (char*)(myHash->arr[4]->next->value));
 }
 
-int destroyHash(hash* hash)
-{
-	int i;
-	node* tempBucket, currNode, prevNode;
 
-	for(i = 0; i < hash->size; i++)
-	{
-		tempBucket = hash->arr[i];
-		currNode = tempBucket->;
-		prevNode = tempBucket;
-		while(currNode != NULL)
-		{
-
-		}
-	}
-}
 
 
 
