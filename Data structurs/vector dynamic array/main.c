@@ -33,11 +33,4 @@ int main()
 	darraySort(myDarr, &vectorsCompare);
 	print_AD(myDarr);
 
-	getch();
-
 }
-
-
-
-
-
