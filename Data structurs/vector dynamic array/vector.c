@@ -130,7 +130,7 @@ AdtStatus darraySet(darray *dArr, size_t _index, void* _item)
 	return OK;
 }
 
-int darrayItemsNum(darray *dArr, int*  _numOfItems)
+AdtStatus darrayItemsNum(darray* dArr, int*  _numOfItems)
 {
 	if (dArr == NULL || _numOfItems == NULL)
 		return AllocationError;
@@ -164,7 +164,7 @@ void printVector(void* elem)
 AdtStatus darraySort(darray *dArr, elementCompare compareFunc)
 {
 	int i, j;
-	int temp;
+	void* temp;
 	size_t arraySize = dArr->index;
 
 	if (dArr == NULL || arraySize <= 0)
@@ -204,4 +204,3 @@ AdtStatus darrayDestroy(darray *dArr, elementDestroy destroyFunc, void *context)
 	}
 	return AllocationError;
 }
-
