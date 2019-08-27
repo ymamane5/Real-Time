@@ -21,5 +21,6 @@ typedef struct hash {
 hash* createHash(int size, hashFuction1 hashFunc, compareFunction compFunc);
 int insert(hash* hash, void* key, void* value);
 void* hashfind(hash* hash, void* key);
+int destroyHash(hash* hash);
 
 #endif
