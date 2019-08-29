@@ -3,6 +3,8 @@
 #include<string.h>
 #include "hash.h"
 
+#define HASH_SIZE 5
+
 void insert_test(hash* myHash);
 
 int hashFunc(unsigned char* str)
@@ -23,9 +25,10 @@ int copareFunc(void* elem1, void* elem2)
 
 int main()
 {
-	char* str = "abcd";
-	char* str2 = "abcde";
-	hash* myHash = createHash(10, hashFunc, copareFunc);
+	//char* str = "abcd";
+	//char* str2 = "abcde";
+	hash* myHash = createHash(HASH_SIZE, hashFunc, copareFunc);
+	
 	if (myHash == NULL)
 	{
 		printf("cannot create hash table\n");
@@ -33,36 +36,26 @@ int main()
 	}
 
 	insert_test(myHash);
-
-	//printf("found: %s\n", (char*)hashfind(myHash, "key7"));
-	
+	destroyHash(myHash);
+	getch();
 }
 
 void insert_test(hash* myHash)
 {
-	char* str = "abcd";
-	char* str2 = "abcde";
-	
-	insert(myHash, str, "value1");
-	insert(myHash, str2, "value2");
+	insert(myHash, "key1", "value1");
+	insert(myHash, "key2", "value2");
 	insert(myHash, "key3", "value3");
 	insert(myHash, "key4", "value4");
 	insert(myHash, "key5", "value5");
 	insert(myHash, "key6", "value6");
 	insert(myHash, "key7", "value7");
-	insert(myHash, "key7", "value7");
-
-
-	printf("hash->arr[4]->key = %s\n", (char*)myHash->arr[4]->key);
-	printf("hash->arr[4-2]->key = %s\n", (char*)myHash->arr[4]->next->key);
-	printf("hash->arr[4-3]->key = %s\n", (char*)myHash->arr[4]->next->next->key);
-
-	//printf("myHash->arr[3]->value = %s\n", (char*)(myHash->arr[3]->value));
-	//printf("myHash->arr[4]->value = %s\n", (char*)(myHash->arr[4]->value));
-	//printf("myHash->arr[4(2)]->value = %s\n", (char*)(myHash->arr[4]->next->value));
+	insert(myHash, "key8", "value8");
+	insert(myHash, "key9", "value9");
+	insert(myHash, "key10", "value10");
+	insert(myHash, "key11", "value11");
+	insert(myHash, "key12", "value12");
+	printHash(myHash);
+	printf("***********************************\n");
+	deleteNode(myHash, "key6");
+	printHash(myHash);
 }
-
-
-
-
-
