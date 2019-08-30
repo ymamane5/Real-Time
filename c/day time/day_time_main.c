@@ -46,6 +46,5 @@ int main()
 	free(date1);
 	free(date2);
 	
-	getch();
 	return 0;
 }
