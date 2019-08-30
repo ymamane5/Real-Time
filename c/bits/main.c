@@ -8,7 +8,7 @@ int main()
 	int rotate, input;
 
 	do {
-		printf("Choose an action\n1. invert x\n2. rotate x\n");
+		printf("Choose an action\n1. invert x\n2. rotate x\n3. exit\n");
 		scanf("%d", &input);
 		switch (input)
 		{
