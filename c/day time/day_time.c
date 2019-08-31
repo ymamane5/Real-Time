@@ -2,7 +2,6 @@
 #include<stdlib.h>
 #include<string.h>
 #include<time.h>
-#include<conio.h>
 #include "day_time.h"
 
 int month_length[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -35,12 +34,14 @@ int setDate(cDate_t* date, int day, int month, int year)
 
 void addDate(cDate_t* date1, cDate_t* date2)
 {
+	int dayRemainder, month, year;
+	int yearReminder = 0, leap = 0;
+
 	if (date1 == NULL || date2 == NULL)
 		return;
-	int month = date1->month > date2->month ? date1->month : date2->month;
-	int year = date1->year > date2->year ? date1->year : date2->year;
-	int dayRemainder;
-	int yearReminder = 0, leap = 0;
+
+	month = date1->month > date2->month ? date1->month : date2->month;
+	year = date1->year > date2->year ? date1->year : date2->year;
 
 	if (month == 2)
 	{
@@ -49,8 +50,6 @@ void addDate(cDate_t* date1, cDate_t* date2)
 	}
 	else
 		dayRemainder = (date1->day + date2->day) / (month_length[month - 1] + 1);
-
-	//time_date = time(0);
 
 	date1->day = (date1->day + date2->day) % (month_length[month - 1] + 1 + leap);
 	date1->day += dayRemainder;
