@@ -6,8 +6,10 @@ char* strconcat(char* s1, char* s2);
 
 int main()
 {
-char s1[16] = "abcd";
-char s2[16] = "ahd34";
+char s1[32], s2[32];
+
+printf("please enter 2 strings\n");
+scanf("%s%s", s1, s2);
 
 printf("%d\n", strcompare(s1, s2));
 printf("%s\n", strcopy(s1, s2));
