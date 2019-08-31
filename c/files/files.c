@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 #include "files.h"
 
 void countWords(FILE* fp)
@@ -13,7 +14,7 @@ void countWords(FILE* fp)
 		insert(da, buff);
 	}
 	printDA(da);
-	//destroyDA(da);
+	destroyDA(da);
 }
 
 void destroyDA(DA* da)
@@ -60,7 +61,6 @@ void insert(DA* da, char* buff)
 		da->arr[da->index]->count = 1;
 
 		strcpy((da->arr[da->index])->str, buff);
-		//printf("%s\n", (da->arr[da->index])->str);
 		da->index++;
 	}
 }
