@@ -37,7 +37,6 @@ int main()
 
 	insert_test(myHash);
 	destroyHash(myHash);
-	getch();
 }
 
 void insert_test(hash* myHash)
