@@ -2,7 +2,6 @@
 #include "hash.h"
 
 int nodeExist(hash* hash, node* runner, void* key, void* value);
-void printHash(hash* hash);
 
 int nodeExist(hash* hash, node* runner, void* key, void* value)
 {
