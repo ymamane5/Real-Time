@@ -1,4 +1,4 @@
-CFLAGS = -g
+CFLAGS = -g -m32
 
 aprog : main.o malloc.o
 	gcc -o aprog main.o malloc.o
