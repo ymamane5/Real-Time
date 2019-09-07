@@ -19,7 +19,7 @@ void* memFree(void* buffer, void* address)
 	//printf("next - head = %d\n", next - buffer);
 	while(!IS_OCCUPIED(next) && ((char*)next - (char*)buffer < buff_size)) // is free
 	{
-		printf("unifying during free\n");
+		//printf("unifying during free\n");
 		*(unsigned int*)(current - 4) += HEADER_VALUE(next) + 4;
 		next = current + HEADER_VALUE(current) + 4;
 	}
@@ -87,7 +87,7 @@ void* memAlloc(void* buffer, unsigned int size)
 				{
 					while(!IS_OCCUPIED(next) && ((char*)next - (char*)current < buff_size))
 					{
-						printf("unifying\n");
+						//printf("unifying\n");
 						*(unsigned int*)(current - 4) += *(unsigned int*)next + 4;
 						next = next + HEADER_VALUE(next) + 4;
 						//i++;
