@@ -5,6 +5,8 @@
 #include<unistd.h>
 #include "wQueue.h"
 
+void printArray(wQueue* queue);
+
 wQueue* createQueue(int size)
 {
 	wQueue* newQueue;
@@ -38,17 +40,28 @@ void printQueue(wQueue* queue)
 
 }
 
+void printArray(wQueue* queue)
+{
+	int i;
+
+	for(i = 0; i < queue->count; i++)
+		printf("%s  ", (char*)queue->arr[i]);
+
+	printf("\n");
+}
+
 void enqueue(wQueue* queue, void* item)
 {
-	printf("***inside enqueue***\n");
-	printf("queue->arr[%d] = %s\n",queue->tail ,(char*)(queue->arr[queue->tail]));
 	sem_wait(&queue->semF);
 	pthread_mutex_lock(&(queue->lock));
+	//printf("***inside enqueue***\n");
+	//printf("queue->arr[%d] = %s\n",queue->tail ,(char*)(queue->arr[queue->tail]));
+	//printf("item = %s\n", (char*)item);
 	queue->arr[queue->tail] = item;
-	//printf("insert to   : queue[%d] = %p\n", queue->tail, &queue->arr[queue->tail]);
-	//printf("enqueue got: %s\n", (char*)queue->arr[queue->tail]);
+	//printf("queue->arr[%d] = %s\n",queue->tail ,(char*)(queue->arr[queue->tail]));
 	queue->tail = (queue->tail + 1) % (queue->size);
-	queue->count++;	
+	queue->count = queue->count + 1;	
+	//printArray(queue);
 	pthread_mutex_unlock(&(queue->lock));
 	sem_post(&queue->semE);
 }
@@ -57,11 +70,12 @@ void* dequeue(wQueue* queue)
 {
 	void* temp;
 	int tempNum;
-	printf("***inside dequeue***\n");
-	printf("queue->arr[%d] = %s\n",queue->head ,(char*)(queue->arr[queue->head]));
-	//printf("dequeue from: queue[%d] = %p\n", queue->head, queue->arr[queue->head]);
+
+	//printf("queue->head = %d\n", queue->head);
 	sem_wait(&queue->semE);
 	pthread_mutex_lock(&(queue->lock));
+	//printf("***inside dequeue***\n");
+	//printf("queue->arr[%d] = %s\n",queue->head ,(char*)(queue->arr[queue->head]));
 	temp = queue->arr[queue->head];
 	//printf("dequeue send: %s\n", (char*)temp);
 	queue->head = (queue->head + 1) % (queue->size);

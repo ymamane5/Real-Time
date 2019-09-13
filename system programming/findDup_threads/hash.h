@@ -2,7 +2,7 @@
 #define MYHASH
 #include <stdlib.h>
 
-#define HASH_SIZE 1000
+#define HASH_SIZE 10000
 #define MUTEX_FACTOR 100
 
 typedef int(*hashFuction1)(unsigned char*);

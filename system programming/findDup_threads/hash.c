@@ -4,6 +4,8 @@
 #include "hash.h"
 #include "findDup.h"
 
+void freeBucket(node* currNode);
+
 void printHash(hash* hash)
 {
 	int i;
@@ -18,7 +20,7 @@ void printHash(hash* hash)
 		while (runner)
 		{
 			md5Print((char*)runner->key);
-			printf("%20s", (char*)runner->value);
+			printf("%20s    ", (char*)runner->value);
 			runner = runner->next;
 		}
 		printf("\n");
@@ -48,6 +50,22 @@ hash* createHash(int size, hashFuction1 hashFunc, compareFunction compFunc)
 
 }
 
+void freeBucket(node* currNode)
+{
+	node* next = currNode;
+
+	//printf("in freeBucket\n");
+	while(next)
+	{
+		currNode = next;
+		next = currNode->next;
+		//printf("freeing %s\n", (char*)currNode->value);
+		free(currNode->value);
+	}
+
+	free(currNode);	
+}
+
 int insert(hash* hash, void* key, void* value)
 {
 	int location, mutexIndex;
@@ -60,7 +78,9 @@ int insert(hash* hash, void* key, void* value)
 
 	location = (hash->myHashFunc(key)) % hash->size;
 	mutexIndex = location % MUTEX_FACTOR;
+//	printf("lock mutex %d\n", mutexIndex);
 	pthread_mutex_lock(&hash->locks[mutexIndex]);
+//	printf("inside %d\n", mutexIndex);
 
 	//printf("location = %d", location);
 
@@ -70,6 +90,7 @@ int insert(hash* hash, void* key, void* value)
 		hash->arr[location]->key = key;
 		hash->arr[location]->value = value;
 		hash->arr[location]->next = NULL;
+//		printf("unlock %d\n", mutexIndex);
 		pthread_mutex_unlock(&hash->locks[mutexIndex]);
 		return 0;  // no dups
 	}
@@ -85,6 +106,7 @@ int insert(hash* hash, void* key, void* value)
 		currNode->next->key = key;
 		currNode->next->value = value;
 		currNode->next->next = NULL;
+//		printf("unlock %d\n", mutexIndex);
 		pthread_mutex_unlock(&hash->locks[mutexIndex]);
 		printf("return 1\n");
 		return 1; // dup found
@@ -146,26 +168,17 @@ int deleteNode(hash* hash, void* key)
 int destroyHash(hash* hash)
 {
 	int i;
-	node *tempBucket, *currNode, *prevNode;
-
+	//node *tempBucket, *currNode, *prevNode;
 	for (i = 0; i < hash->size; i++)
 	{
-		tempBucket = hash->arr[i];
-		currNode = tempBucket;
-		prevNode = tempBucket;
-		while (currNode != NULL)
-		{
-			prevNode = NULL;
-			free(prevNode);
-			prevNode = currNode;
-			currNode = currNode->next;
-		}
-		free(currNode);
+		//tempBucket = hash->arr[i];
+		freeBucket(hash->arr[i]);
 	}
-	free(hash->arr);
 	free(hash);
 
 	return 1;
 }
+
+
 
 //void hashForEach(hash* hash, userFunc func)

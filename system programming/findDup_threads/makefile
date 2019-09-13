@@ -1,7 +1,8 @@
-﻿CFLAGS = -g -lcrypto -lpthread
+﻿
+CFLAGS = -g -lcrypto -lpthread
 
 findDup : findDup.o hash.o wQueue.o
-	gcc -o aprog testFindDup.c findDup.o hash.o wQueue.o $(CFLAGS)
+	gcc -o aprog main.c findDup.o hash.o wQueue.o $(CFLAGS)
 
 findDup.o : findDup.c findDup.h
 	gcc -c $(CFLAGS) findDup.c

@@ -20,6 +20,7 @@ char* addPreName(char* name);
 hash* myHash;
 char* termin = "terminate";
 char globalName[50];
+int counter = 0;
 
 int hashFunc(unsigned char* str)
 {
@@ -46,7 +47,7 @@ int scanTree(void* _queue, char* basePath)
 	char currPath[100];
 	wQueue* queue = (wQueue*)_queue;
 
-	strcpy(currPath, basePath);
+	
 
 	if(!dir) // is File
 	{
@@ -61,23 +62,35 @@ int scanTree(void* _queue, char* basePath)
 			
 			if(entry->d_type == 4 && (strcmp(entry->d_name, ".") != 0) && ((strcmp(entry->d_name, "..") != 0))) //is Directory
 				{
+				strcpy(currPath, basePath);
 				strcat(currPath, "/");
 				strcat(currPath, entry->d_name);
-				printf("Dir: %s\n", currPath);
+				//printf("Dir: %s\n", currPath);
 				scanTree(queue, currPath);
 				}
 			else if((strcmp(entry->d_name, ".") != 0) && (strcmp(entry->d_name, "..") != 0))// is File
 			{
+				char* path = malloc(sizeof(char) * 100);
 				strcpy(currPath, basePath);
 				strcat(currPath, "/");
 				strcat(currPath, entry->d_name);
 				//printf("send: %s/\n", currPath);
-				enqueue(queue, currPath);
-				hashInsertHandler(queue);
+				strcpy(path, currPath);
+				enqueue(queue, (void*)path);
+				//hashInsertHandler(queue);
 				strcpy(currPath, basePath);
 				
 			}
-		}
+			/*
+			counter++;
+			if(counter % 4 == 0)
+			{
+				hashInsertHandler(queue);
+				counter = 0;
+			}
+			*/
+			
+		}		
 		return dupflag;
 	}
 
@@ -89,24 +102,29 @@ void* hashInsertHandler(wQueue* queue)
 	char* pathName;
 	int dupflag = 0, res;
 	int* insert_res = calloc(sizeof(int), 1);
-	
+	char* temp;
 
-	//while(1)
+	while(1)
+//	for (int i = 0; i < counter; i++)
 	{
-		pathName = (char*)dequeue(queue);
 		
+		pathName = (char*)dequeue(queue);
+		//strcpy(pathName, temp);
+		//printf("hashInsertHandler free: %s\n", temp);
+		//printf("thread got: %s\n", pathName);
 		if(!strcmp(pathName, termin))
 		{
 			enqueue(queue, termin);
 			printf("thread exit\n");
 			pthread_exit((void*)insert_res);
 		}
-		//printf("thread got: %s\n", pathName);	
+		//free(temp);
+			
 		//pathName = addPreName(pathName);	
 
-		//res = insert(myHash, md5(pathName), pathName);
-		//if(res == -1)
-		//	printf("Eror: cannot insert %s\n", pathName);
+		res = insert(myHash, md5(pathName), pathName);
+		if(res == -1)
+			printf("Eror: cannot insert %s\n", pathName);
 
 		*insert_res += res;
 	}	
@@ -181,10 +199,8 @@ int findDup(char* name)
 
 	for(i = 0; i < THREADS_COUNT; i++)
 	{
-//		pthread_create(&threads[i], NULL, hashHandler, (void*)queue);
+		pthread_create(&threads[i], NULL, hashHandler, (void*)queue);
 	}
-		
-
 	
 	if(scanTree(queue, path_buff) == -1)
 	{
@@ -196,8 +212,8 @@ int findDup(char* name)
 
 	for(i = 0; i < THREADS_COUNT; i++)
 	{
-	//	pthread_join(threads[i], &ret);
-	//	scan_result += *(int*)ret;
+		pthread_join(threads[i], &ret);
+		scan_result += *(int*)ret;
 	}
 
 	if(scan_result == -1)
