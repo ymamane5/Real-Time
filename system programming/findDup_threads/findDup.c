@@ -47,8 +47,6 @@ int scanTree(void* _queue, char* basePath)
 	char currPath[100];
 	wQueue* queue = (wQueue*)_queue;
 
-	
-
 	if(!dir) // is File
 	{
 		stat(basePath, &sb);
@@ -65,7 +63,6 @@ int scanTree(void* _queue, char* basePath)
 				strcpy(currPath, basePath);
 				strcat(currPath, "/");
 				strcat(currPath, entry->d_name);
-				//printf("Dir: %s\n", currPath);
 				scanTree(queue, currPath);
 				}
 			else if((strcmp(entry->d_name, ".") != 0) && (strcmp(entry->d_name, "..") != 0))// is File
@@ -74,23 +71,14 @@ int scanTree(void* _queue, char* basePath)
 				strcpy(currPath, basePath);
 				strcat(currPath, "/");
 				strcat(currPath, entry->d_name);
-				//printf("send: %s/\n", currPath);
 				strcpy(path, currPath);
+
 				enqueue(queue, (void*)path);
-				//hashInsertHandler(queue);
 				strcpy(currPath, basePath);
 				
-			}
-			/*
-			counter++;
-			if(counter % 4 == 0)
-			{
-				hashInsertHandler(queue);
-				counter = 0;
-			}
-			*/
-			
-		}		
+			}	
+		}	
+
 		return dupflag;
 	}
 
@@ -98,29 +86,19 @@ int scanTree(void* _queue, char* basePath)
 
 void* hashInsertHandler(wQueue* queue)
 {
-	//DIR* dir = opendir(name);
-	char* pathName;
-	int dupflag = 0, res;
-	int* insert_res = calloc(sizeof(int), 1);
-	char* temp;
+	char *pathName, *temp;
+	int res, *insert_res = calloc(sizeof(int), 1);
 
 	while(1)
-//	for (int i = 0; i < counter; i++)
 	{
 		
 		pathName = (char*)dequeue(queue);
-		//strcpy(pathName, temp);
-		//printf("hashInsertHandler free: %s\n", temp);
-		//printf("thread got: %s\n", pathName);
+
 		if(!strcmp(pathName, termin))
 		{
 			enqueue(queue, termin);
-			printf("thread exit\n");
 			pthread_exit((void*)insert_res);
 		}
-		//free(temp);
-			
-		//pathName = addPreName(pathName);	
 
 		res = insert(myHash, md5(pathName), pathName);
 		if(res == -1)
@@ -137,7 +115,6 @@ char* addPreName(char* name)
 	strcpy(pathName, globalName);
 	strcat(pathName, "/");
 	strcat(pathName, name);
-	
 
 	return pathName;
 }
@@ -159,7 +136,6 @@ unsigned char* md5(char* name)
     unsigned char *out = malloc(MD5_DIGEST_LENGTH);
 
     MD5_Init(&c);
-    //printf("md5 got: %s\n", name);
 
     if((fd = open(name, O_RDONLY)) < 0)
     {
@@ -225,11 +201,7 @@ int findDup(char* name)
 
 	printf("files list:\n");
 	printHash(myHash);
-
 	destroyHash(myHash);
 
 	return 1;
 }
-
-
-
