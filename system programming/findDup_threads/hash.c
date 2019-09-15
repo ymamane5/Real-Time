@@ -41,7 +41,6 @@ hash* createHash(int size, hashFuction1 hashFunc, compareFunction compFunc)
 		free(newHash);
 		return NULL;
 	}
-	//newHash->locks = malloc(sizeof(pthread_mutex_t) * (size / 100));
 	newHash->size = size;
 	newHash->myHashFunc = hashFunc;
 	newHash->compFunc = compFunc;
@@ -54,12 +53,10 @@ void freeBucket(node* currNode)
 {
 	node* next = currNode;
 
-	//printf("in freeBucket\n");
 	while(next)
 	{
 		currNode = next;
 		next = currNode->next;
-		//printf("freeing %s\n", (char*)currNode->value);
 		free(currNode->value);
 	}
 
@@ -71,18 +68,12 @@ int insert(hash* hash, void* key, void* value)
 	int location, mutexIndex;
 	node *runner, *currNode;
 
-	//printf("value = %s\n", (char*)value);
-
 	if (hash == NULL || key == NULL | value == NULL)
 		return -1;  // error
 
 	location = (hash->myHashFunc(key)) % hash->size;
 	mutexIndex = location % MUTEX_FACTOR;
-//	printf("lock mutex %d\n", mutexIndex);
 	pthread_mutex_lock(&hash->locks[mutexIndex]);
-//	printf("inside %d\n", mutexIndex);
-
-	//printf("location = %d", location);
 
 	if (hash->arr[location] == NULL)
 	{
@@ -90,7 +81,6 @@ int insert(hash* hash, void* key, void* value)
 		hash->arr[location]->key = key;
 		hash->arr[location]->value = value;
 		hash->arr[location]->next = NULL;
-//		printf("unlock %d\n", mutexIndex);
 		pthread_mutex_unlock(&hash->locks[mutexIndex]);
 		return 0;  // no dups
 	}
@@ -106,7 +96,6 @@ int insert(hash* hash, void* key, void* value)
 		currNode->next->key = key;
 		currNode->next->value = value;
 		currNode->next->next = NULL;
-//		printf("unlock %d\n", mutexIndex);
 		pthread_mutex_unlock(&hash->locks[mutexIndex]);
 		printf("return 1\n");
 		return 1; // dup found
@@ -168,17 +157,13 @@ int deleteNode(hash* hash, void* key)
 int destroyHash(hash* hash)
 {
 	int i;
-	//node *tempBucket, *currNode, *prevNode;
+	
 	for (i = 0; i < hash->size; i++)
 	{
-		//tempBucket = hash->arr[i];
 		freeBucket(hash->arr[i]);
 	}
+
 	free(hash);
 
 	return 1;
 }
-
-
-
-//void hashForEach(hash* hash, userFunc func)
