@@ -8,9 +8,7 @@
 #include "findDup.h"
 
 int main(int argc, char *argv[])
-{
-	int pipefd[2];
-	
+{	
 	if(argc < 2)
 	{
 		printf("no directory name entered\n");
