@@ -27,7 +27,6 @@ void printQueue(wQueue* queue)
 	int i, index = queue->head;
 
 	printf("head = %d\ntail = %d \ncount = %d\n", queue->head, queue->tail, queue->count);
-	//printf("arr[0] = %d\n", *(int*)(queue->arr[0]));
 	printf("arr = ");
 	for(i = 0; i < queue->count; i++)
 	{
@@ -37,7 +36,6 @@ void printQueue(wQueue* queue)
 	if(queue->count == 0)
 		printf("[Empty]\n");
 	printf("\n");
-
 }
 
 void printArray(wQueue* queue)
@@ -54,14 +52,9 @@ void enqueue(wQueue* queue, void* item)
 {
 	sem_wait(&queue->semF);
 	pthread_mutex_lock(&(queue->lock));
-	//printf("***inside enqueue***\n");
-	//printf("queue->arr[%d] = %s\n",queue->tail ,(char*)(queue->arr[queue->tail]));
-	//printf("item = %s\n", (char*)item);
 	queue->arr[queue->tail] = item;
-	//printf("queue->arr[%d] = %s\n",queue->tail ,(char*)(queue->arr[queue->tail]));
 	queue->tail = (queue->tail + 1) % (queue->size);
 	queue->count = queue->count + 1;	
-	//printArray(queue);
 	pthread_mutex_unlock(&(queue->lock));
 	sem_post(&queue->semE);
 }
@@ -71,13 +64,9 @@ void* dequeue(wQueue* queue)
 	void* temp;
 	int tempNum;
 
-	//printf("queue->head = %d\n", queue->head);
 	sem_wait(&queue->semE);
 	pthread_mutex_lock(&(queue->lock));
-	//printf("***inside dequeue***\n");
-	//printf("queue->arr[%d] = %s\n",queue->head ,(char*)(queue->arr[queue->head]));
 	temp = queue->arr[queue->head];
-	//printf("dequeue send: %s\n", (char*)temp);
 	queue->head = (queue->head + 1) % (queue->size);
 	queue->count--;
 	pthread_mutex_unlock(&(queue->lock));
