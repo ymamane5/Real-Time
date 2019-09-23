@@ -175,9 +175,10 @@ char& string_t::operator[](int i)
 		exit(0);	
 	}
 }
-
+/*
 ostream& string_t::operator<<(ostream& os, string_t& str)
 {
 	os << str.mystr << "\n";
 	return os;
 }
+*/

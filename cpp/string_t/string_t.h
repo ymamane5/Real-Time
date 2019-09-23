@@ -32,7 +32,7 @@ public:
 	bool contains(const string_t& str) const;
 	char operator[](int i) const;
 	char& operator[](int i);
-	ostream& operator<<(ostream& os, string_t& str);
+	//ostream& operator<<(ostream& os, string_t& str);
 
 private:
 	char* mystr;
