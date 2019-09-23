@@ -9,17 +9,17 @@ int main()
 {
 	char* temp1 = (char*)malloc(32);
 	char* temp2 = (char*)malloc(32);
-	int input;
+	int input, index;
 	
 	printf("Please enter string 1:\n");
 	scanf("%s", temp1);
 
 	string_t s1(temp1);
-	string_t s2();
+	string_t *s2 = new string_t();
 	
 	do 
 	{
-		printf("choose option:\n1. to upper case");
+		printf("choose option:\n1. to upper case\n2. prepend\n3. operator +=\n4. operator <\n5. contains\n6. operator []\n");
 		scanf("%d", &input);
 
 		switch (input)
@@ -31,34 +31,42 @@ int main()
 		case 2:
 			printf("Enter string to prepend\n");
 			scanf("%s", temp2);
-			s2.setstring(temp2);
-			s1.prepend(s2);
+			s2->setstring(temp2);
+			s1.prepend(*s2);
+			s1.print();
+			break;
+		case 3:
+			printf("Enter string to concat\n");
+			scanf("%s", temp2);
+			s2->setstring(temp2);
+			s1 += *s2;
+			s1.print();
+			break;
+		case 4:
+			printf("Enter second string to check\n");
+			scanf("%s", temp2);
+			s2->setstring(temp2);
+			cout << "s1 < s2 ?  " << (s1 < *s2) << "\n";
+			break;
+		case 5:
+			printf("Enter substring\n");
+			scanf("%s", temp2);
+			s2->setstring(temp2);
+			cout << "s1.contains(s2) = " << s1.contains(*s2) << "\n";
+			break;
+		case 6:
+			cout << "Enter index";
+			cin >> index;
+			cout << "s[index] = " << s1[index] << "\n";
+			break;
+		case 7:
+			//cout << s1;
 			break;
 		default:
 			break;
 		}
 
 	} while (input < 9);
-	{
-
-	}
-
 	
-
-	
-	
-	s1.mytolower();
-	s1.print();
-	
-	s1.print();
-	//s1 += s2;
-	//s1.print();
-	//cout << (s1[4]) << "\n";
-	//s1[4] = 'e';
-	//cout << s1[4] << "\n";
-
-	//cout << s1;
-	
-
 	return 0;
 }
