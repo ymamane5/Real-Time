@@ -6,7 +6,7 @@
 #include "string_t.h"
 
 using namespace std;
-bool string_t::caseSens = true;
+bool string_t::caseSens = false;
 size_t string_t::default_capacity = 16;
 
 string_t::string_t()
@@ -263,12 +263,26 @@ size_t string_t::setCapacity(size_t size)
 	}
 }
 
-size_t string_t::getFirstAccurance(const char ch) const
+size_t string_t::getFirstAccurance(char ch) const
 {
-	return (size_t)(strchr(mystr, ch) - mystr);
+	char *temp = new char[strlen(mystr)];
+
+	if(caseSens == true)
+		return (size_t)(strchr(mystr, ch) - mystr);
+	else
+	{
+		strcpy(temp, mystr);
+		for(int i = 0; i < strlen(temp); i++)
+			temp[i] = tolower(temp[i]);
+
+		tolower(ch);
+		return (size_t)(strchr(temp, ch) - temp);
+	}
+
+	delete temp;
 }
 
-size_t string_t::getLastAccurance(const char ch) const
+size_t string_t::getLastAccurance(char ch) const
 {
 	return (size_t)(strrchr(mystr, ch) - mystr);
 }

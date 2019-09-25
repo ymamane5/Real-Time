@@ -32,14 +32,16 @@ public:
 	bool operator==(const string_t& str) const;
 	bool operator!=(const string_t& str) const;
 	bool contains(const string_t& str) const;
+
 	char operator[](int i) const;
 	char& operator[](int i);
 	size_t setCapacity(size_t size);
 	size_t getCapacity() { return capacity; }
-	size_t getFirstAccurance(const char ch) const;
-	size_t getLastAccurance(const char ch) const;
+	size_t setDefCapacity(size_t size) { size_t temp = default_capacity; default_capacity = size;  return temp; }
+	size_t getDefCapacity() { return default_capacity; }
+	size_t getFirstAccurance(char ch) const;
+	size_t getLastAccurance(char ch) const;
 	string_t& operator()(int start, uint len);
-
 	static bool setCaseSens(bool flag);
 	static bool getCaseSens() { return string_t::caseSens; }
 	
