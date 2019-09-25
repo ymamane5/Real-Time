@@ -6,40 +6,38 @@
 #include "string_t.h"
 
 using namespace std;
+bool string_t::caseSens = true;
+size_t string_t::default_capacity = 16;
 
 string_t::string_t()
 {
-	mystr = new char[32];
+	mystr = new char;
+	capacity = string_t::default_capacity;
 }
 
-string_t::string_t(const char* str)
+string_t::string_t(const char* str)  // copy ctor
 {
-	mystr = new char[32];
+	capacity = nextPowerOf2(strlen(str) + 1);
+	mystr = new char[capacity];
 	strcpy(mystr, str);
 }
 string_t::string_t(const string_t &str)  // copy ctor
 {
-	mystr = new char[32];
-	setstring(str.getstring());
+	capacity = nextPowerOf2(strlen(str.mystr) + 1);
+	mystr = new char[capacity];
+	strcpy(mystr, str.mystr);
 }
 
-string_t::~string_t()
+string_t::~string_t()  // dstor
 {
 	delete[] mystr;
-}
-
-void string_t::createString(const char* str)
-{
-	delete[] mystr;
-	mystr = new char[32];
-	strcpy(mystr, str);
 }
 
 string_t& string_t::operator=(const string_t& str)  // str1 = str2
 {
 	if(this != &str)
 	{
-		createString(str.getstring());
+		setstring(str.getstring());
 	}
 
 	return *this;
@@ -52,7 +50,17 @@ int string_t::length() const
 
 void string_t::setstring(const char* str)
 {
-	createString(str);
+	if(strlen(str) < capacity)
+	{
+		strcpy(mystr, str);
+	}
+	else
+	{
+		capacity = nextPowerOf2(strlen(str) + 1);
+		delete[] mystr;
+		mystr = new char[capacity];
+		strcpy(mystr, str);
+	}
 }
 
 char* string_t::getstring() const
@@ -62,7 +70,10 @@ char* string_t::getstring() const
 
 int string_t::compare(const string_t& str) const
 {
-	return strcmp(mystr, str.mystr);
+	if(caseSens == true)
+		return strcmp(mystr, str.mystr);
+	else
+		return strcasecmp(mystr, str.mystr);
 }
 
 void string_t::print() const
@@ -88,71 +99,109 @@ void string_t::mytolower()
 
 void string_t::prepend(const char* str)
 {
-	char temp[32];
+	char* temp = new char[strlen(str) + strlen(mystr) + 1];
 
-	strcpy(temp, mystr);
-	createString(str);
-	strcat(mystr, temp);
+	strcpy(temp, str);
+	strcat(temp, mystr);
+	setstring(temp);
+
+	delete temp;
 }
 
 void string_t::prepend(string_t& str)
 {
-	char temp[32];
+	prepend((const char*)str.mystr);
+}
+
+string_t& string_t::operator+=(const string_t& str)
+{
+	char* temp = new char[strlen(str.mystr) + strlen(mystr) + 1];
 
 	strcpy(temp, mystr);
-	createString(str.getstring());
-	strcat(mystr, temp);
+	strcat(temp, str.mystr);
+	setstring(temp);
+
+	return *this;
 }
 
-void string_t::operator+=(const string_t& str)
+bool string_t::operator<(const string_t& str) const
 {
-	strcat(mystr, str.mystr);
+	if(this->compare(str) < 0)
+		return true;
+	else
+		return false;
 }
-
-int string_t::operator<(const string_t& str) const
+bool string_t::operator>(const string_t& str) const
 {
-	return strcmp(str.mystr, this->mystr);
-}
-int string_t::operator>(const string_t& str) const
-{
-	return strcmp(this->mystr, str.mystr);
+	if(this->compare(str) > 0)
+		return true;
+	else
+		return false;
 }
 
 bool string_t::operator>=(const string_t& str) const
 {
-	if(strcmp(this->mystr, str.mystr) >= 0)
+	if(this->compare(str) >= 0)
 		return true;
 	else
 		return false;
 }
 bool string_t::operator<=(const string_t& str) const
 {
-	if(strcmp(this->mystr, str.mystr) <= 0)
+	if(this->compare(str) <= 0)
 		return true;
 	else
 		return false;
 }
 bool string_t::operator==(const string_t& str) const
 {
-	if(strcmp(this->mystr, str.mystr) == 0)
+	if(this->compare(str) == 0)
 		return true;
 	else
 		return false;
 }
 bool string_t::operator!=(const string_t& str) const
 {
-	if(strcmp(this->mystr, str.mystr) != 0)
+	if(this->compare(str) != 0)
 		return true;
 	else
 		return false;
 }
 
+string_t& string_t::operator()(int start, uint len)
+{
+	int i = 0;
+	char* buff = new char[len + 1];
+
+	while(i < len && mystr[start + i] != '\0')
+	{
+		buff[i] = mystr[start + i];
+		i++;
+	}
+
+	buff[i] = '\0';
+	setstring(buff);
+	delete buff;
+
+	return *this;
+}
+
 bool string_t::contains(const string_t& str) const
 {
-	if(strstr(this->mystr, str.mystr) != NULL)
-		return true;
+	if(caseSens == true)
+	{
+		if(strstr(this->mystr, str.mystr) != NULL)
+			return true;
+		else
+			return false;
+	}
 	else
-		return false;
+	{
+		if(strcasestr(this->mystr, str.mystr) != NULL)
+			return true;
+		else
+			return false;
+	}
 }
 char string_t::operator[](int i) const
 {
@@ -175,10 +224,67 @@ char& string_t::operator[](int i)
 		exit(0);	
 	}
 }
-/*
-ostream& string_t::operator<<(ostream& os, string_t& str)
+
+ostream& operator<<(ostream& os, string_t& str)
 {
-	os << str.mystr << "\n";
+	os << str.getstring() << "\n";
 	return os;
 }
-*/
+
+istream& operator>>(istream& is, string_t& str)
+{
+	char temp[32];
+	is >> temp;
+
+	str.setstring(temp); 
+}
+
+bool string_t::setCaseSens(bool flag)
+{
+	bool temp = caseSens;
+	caseSens = flag;
+
+	return temp;
+}
+
+size_t string_t::setCapacity(size_t size)
+{
+	size_t temp = capacity;
+
+	if(size <= strlen(mystr))
+	{
+		cout << "cannot change capacity - too small for current object\n";
+		return capacity;
+	}
+	else
+	{
+		capacity = size;
+		return temp;
+	}
+}
+
+size_t string_t::getFirstAccurance(const char ch) const
+{
+	return (size_t)(strchr(mystr, ch) - mystr);
+}
+
+size_t string_t::getLastAccurance(const char ch) const
+{
+	return (size_t)(strrchr(mystr, ch) - mystr);
+}
+
+size_t nextPowerOf2(size_t n)  
+{  
+    size_t count = 0;  
+      
+    if (n && !(n & (n - 1)))  
+        return n;  
+      
+    while( n != 0)  
+    {  
+        n >>= 1;  
+        count += 1;  
+    }  
+      
+    return 1 << count;  
+}  
