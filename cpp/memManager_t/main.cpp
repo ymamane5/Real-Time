@@ -33,22 +33,19 @@ int main()
 		case 1:
 			cout << "Enter string to insert:\n";
 			cin >> str;
-			//cout << pool.writeData(str) << " characters has been written\n";
-			cout << page.writeData(str) << " characters has been written\n";
+			cout << pool.writeData(str) << " characters has been written\n";
 			break;
 		case 2:
 			cout << "Enter string to insert:\n";
 			cin >> str;
 			cout << "Enter position\n";
 			cin >> num;
-			//cout << pool.writeData(str, num) << " characters has been written\n";
-			cout << page.writeData(str, num) << " characters has been written\n";
+			cout << pool.writeData(str, num) << " characters has been written\n";
 			break;
 		case 3:
 			cout << "Enter length to read\n";
 			cin >> len;
-			//cout << "read " << pool.readData(buff, len) << " characters\n";
-			cout << "read " << page.readData(buff, len) << " characters\n";
+			cout << "read " << pool.readData(buff, len) << " characters\n";
 			cout << "string = " << buff << "\n";
 			break;
 		case 4:
@@ -56,14 +53,13 @@ int main()
 			cin >> len;
 			cout << "Enter position\n";
 			cin >> num;
-			//cout << "read " << pool.readData(buff, num, len) << " characters\n";
-			cout << "read " << page.readData(buff, num, len) << " characters\n";
+			cout << "read " << pool.readData(buff, num, len) << " characters\n";
 			cout << "string = " << buff << "\n";
 			break;
 		case 5:
 			cout << "Enter new current position\n";
 			cin >> num;
-			if (page.setCurrPosition(num) == 1)
+			if (pool.setCurrPosition(num) == 1)
 				cout << "currunt position changed\n";
 			else
 				cout << "cannot change current position\n";
@@ -71,10 +67,10 @@ int main()
 			cout << "new current position = " << pool.getCurrPosition() << "\n";
 			break;
 		case 6:
-			cout << "actual size = " << page.actualSize() << "\n";
+			cout << "actual size = " << pool.actualSize() << "\n";
 			break;
 		case 7:
-			cout << "page size = " << page.getDefPageSize() << "\n";
+			cout << "page size = " << pool.getPageSize() << "\n";
 			cout << "defualt page size = " << memPool::getDefPageSize() << "\n";
 			break;
 		default:
