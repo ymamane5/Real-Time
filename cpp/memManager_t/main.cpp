@@ -1,8 +1,9 @@
 #include<stdio.h>
 #include<string>
+#include<string.h>
 #include<iostream>
-#include "memoryManager.h"
-#include "memoryPool.h"
+#include "memManager.h"
+#include "memPool.h"
 #include "memPage.h"
 
 
@@ -12,7 +13,8 @@ int main()
 {
 	int input;
 	unsigned int num, len;
-	string str, buff;
+	string str;
+	char buff[16];
 
 	cout << "Enter defualt page size or 0 to use 16\n";
 	cin >> num;
@@ -33,14 +35,18 @@ int main()
 		case 1:
 			cout << "Enter string to insert:\n";
 			cin >> str;
-			cout << pool.writeData(str) << " characters has been written\n";
+			cout << "Enter length\n";
+			cin >> len;
+			cout << pool.writeData(str.c_str(), len) << " characters has been written\n";
 			break;
 		case 2:
 			cout << "Enter string to insert:\n";
 			cin >> str;
+			cout << "Enter length\n";
+			cin >> len;
 			cout << "Enter position\n";
 			cin >> num;
-			cout << pool.writeData(str, num) << " characters has been written\n";
+			cout << pool.writeData(str.c_str(), len, num) << " characters has been written\n";
 			break;
 		case 3:
 			cout << "Enter length to read\n";
@@ -59,10 +65,15 @@ int main()
 		case 5:
 			cout << "Enter new current position\n";
 			cin >> num;
-			if (pool.setCurrPosition(num) == 1)
-				cout << "currunt position changed\n";
-			else
-				cout << "cannot change current position\n";
+			try 
+			{
+				pool.setCurrPosition(num);
+			}
+			catch(int e)
+			{
+				cout << e << ": cannot change current position\n";
+			}	
+			cout << "currunt position changed\n";
 
 			cout << "new current position = " << pool.getCurrPosition() << "\n";
 			break;

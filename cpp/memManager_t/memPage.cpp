@@ -1,23 +1,25 @@
 #include <string>
 #include <iostream>
-#include "memoryManager.h"
+#include <algorithm>
+#include<string.h>
+#include "memManager.h"
 #include "memPage.h"
 
 memPage::memPage()
 {
 	curr_pos = 0;
 	page_size = memManager::page_size;
-	page_string = new string();
+	page_string[0] = '\0';
 }
 
 memPage::memPage(unsigned int size)
 {
 	curr_pos = 0;
 	page_size = size;
-	page_string = new string();
+	page_string[0] = '\0';
 }
 
-unsigned int memPage::readData(string& buff, unsigned int length) const
+unsigned int memPage::readData(void* buff, unsigned int length) const
 {
 	
 	// case 1: no data to read
@@ -26,11 +28,12 @@ unsigned int memPage::readData(string& buff, unsigned int length) const
 		return 0;
 	}
 	// case 2: there is data to read
-	buff.assign(*page_string, curr_pos, length);
+	//buff.assign(*page_string, curr_pos, length);
+	
 
-	return buff.size();
+	return readData(buff, curr_pos, length);
 }
-unsigned int memPage::readData(string& buff, unsigned int position, unsigned int length) const
+unsigned int memPage::readData(void* buff, unsigned int position, unsigned int length) const
 {
 	// case 1: no data to read
 	if (position >= actualSize()) {
@@ -38,17 +41,21 @@ unsigned int memPage::readData(string& buff, unsigned int position, unsigned int
 		return 0;
 	}
 	// case 2: there is data to read
-	buff.assign(*page_string, position, length);
+	//buff.assign(*page_string, position, length);
+	memcpy(buff, (void*)&(page_string[position]), length);
 
-	return buff.size();
+	return strlen((char*)buff);
 }
 
-unsigned int memPage::writeData(const string& buff)
+unsigned int memPage::writeData(const void* buff, unsigned int length)
 {
-	return writeData(buff, curr_pos);
+	return writeData(buff, length, curr_pos);
 }
-unsigned int memPage::writeData(const string& buff, unsigned int position)
+unsigned int memPage::writeData(const void* buff, unsigned int length, unsigned int position)
 {
+	memcpy(page_string + curr_pos, buff, length);
+
+	/*
 	string temp(buff);
 
 	if (position < 0 || position > page_size)
@@ -62,11 +69,13 @@ unsigned int memPage::writeData(const string& buff, unsigned int position)
 	curr_pos = page_string->size();
 	
 	return len;
+	*/
+	return 0;
 }
 
 bool memPage::setCurrPosition(unsigned int pos)
 {
-	if (pos <= page_string->size())
+	if (pos <= strlen(page_string))
 	{
 		curr_pos = pos;
 		return true;

@@ -1,6 +1,7 @@
 #include <iostream>
-#include "memoryManager.h"
-#include "memoryPool.h"
+#include<string.h>
+#include "memManager.h"
+#include "memPool.h"
 #include "memPage.h"
 
 using namespace std;
@@ -30,21 +31,24 @@ bool memPool::isEmpty() const
 
 bool memPool::setCurrPosition(unsigned int pos)
 {
-	if (pos <= actualSize())
+	
+	if (pos > actualSize())
 	{
-		curr_pos = pos;
-		return true;
+		throw 1;
 	}
-	return false;
+	
+	curr_pos = pos;
+
+	return true;
 }
 
-unsigned int memPool::readData(string& buff, unsigned int length) const
+unsigned int memPool::readData(void* buff, unsigned int length) const
 {
 	return readData(buff, curr_pos, length);
 }
-unsigned int memPool::readData(string& buff, unsigned int position, unsigned int length) const
+unsigned int memPool::readData(void* buff, unsigned int position, unsigned int length) const
 {
-	string temp_buff;
+	char* temp_buff = new char[page_size];
 	unsigned int page_num = position / page_size;
 	unsigned int offset = position % page_size;
 	unsigned int bytes_read = 0, new_length;
@@ -61,22 +65,26 @@ unsigned int memPool::readData(string& buff, unsigned int position, unsigned int
 	while (bytes_read < length)
 	{
 		page_num++;
-		new_length = length - bytes_read;
+		//new_length = (v[page_num]->actualSize()) < length ? (v[page_num]->actualSize() - bytes_read) : length - bytes_read;
+		new_length = length -bytes_read;
 		bytes_read += v[page_num]->readData(temp_buff, offset, new_length);
-		buff.append(temp_buff);
+		//buff.append(temp_buff);
+		strcat((char*)buff, temp_buff);
 	}
-	return buff.size();
+	delete[] temp_buff;
+	return strlen((char*)buff);
 }
 
-unsigned int memPool::writeData(const string& buff)
+unsigned int memPool::writeData(const void* buff, unsigned int length)
 {
-	return writeData(buff, curr_pos);
+	return writeData(buff, length, curr_pos);
 }
-unsigned int memPool::writeData(const string& buff, unsigned int position)
+unsigned int memPool::writeData(const void* buff, unsigned int length, unsigned int position)
 {
 	unsigned int page_num = position / page_size;
 	unsigned int offset = position % page_size;
 	unsigned int bytes_written = 0;
+	char* substr = new char[page_size];
 
 	if (position < 0 || position > actualSize())
 		return 0;
@@ -84,14 +92,15 @@ unsigned int memPool::writeData(const string& buff, unsigned int position)
 	bytes_written = v[page_num]->writeData(buff, offset);
 	position += bytes_written;
 
-	while (bytes_written < buff.size())
+	while (bytes_written < strlen((char*)buff))
 	{
 		v.push_back(new memPage());
 		page_num++;
 		offset = 0;
-		string substr = buff.substr(bytes_written, (buff.size() - bytes_written));
-		bytes_written += v[page_num]->writeData(substr, offset);
+		//substr = buff.substr(bytes_written, (strlen(buff) - bytes_written));
+		bytes_written += v[page_num]->writeData((char*)buff + bytes_written, offset);
 	}
 	curr_pos += bytes_written;
+	delete[] substr;
 	return bytes_written;
 }
