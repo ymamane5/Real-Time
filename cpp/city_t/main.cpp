@@ -11,15 +11,16 @@ int main()
 	building<int> build1(1);
 	building<int> build2(2);
 	street<int, int> myStreet(10);
+	city<string, int , int> myCity("myCity1");
 
 	myStreet.AddBuilding2Street(build1);
 	myStreet.AddBuilding2Street(build2);
+	myCity.AddStreet(myStreet);
 
+	myCity.printStreets();
 
-	cout << "builing id = " << build1.getBuidingID() << "\n";
-	cout << "builing id = " << build2.getBuidingID() << "\n";
-	myStreet.printBuildings();
-
+	cout << "city = " << myCity.getCityID() << "\n";
+	myCity.getStreet(10);
 
 
 	return 0;

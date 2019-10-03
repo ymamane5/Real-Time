@@ -41,8 +41,10 @@ street<S_T, B_T>::~street() {}
 template<class S_T, class B_T>
 street<S_T, B_T>& street<S_T, B_T>::operator=(street<S_T, B_T>& s)
 {
-	if(this != s)
+	if(this != s){
 		m_id = s.m_id;
+		buidingList = s.buidingList;
+	}
 
 	return *this;
 }
