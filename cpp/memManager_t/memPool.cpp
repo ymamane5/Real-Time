@@ -89,7 +89,7 @@ unsigned int memPool::writeData(const void* buff, unsigned int length, unsigned 
 	if (position < 0 || position > actualSize())
 		return 0;
 
-	bytes_written = v[page_num]->writeData(buff, offset);
+	bytes_written = v[page_num]->writeData(buff, length);
 	position += bytes_written;
 
 	while (bytes_written < strlen((char*)buff))

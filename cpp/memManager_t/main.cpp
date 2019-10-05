@@ -11,6 +11,23 @@ using namespace std;
 
 int main()
 {
+
+	//memPage page;
+	memPool pool;
+	char buff[16];
+	char str[16];
+
+	cout  << "enter string:\n";
+	cin >> str;
+
+	cout << "written " << pool.writeData(str, strlen(str)) << "\n";
+	pool.setCurrPosition(0);
+	cout << "cuur_pos = " << pool.getCurrPosition() << "\n"; 
+	pool.readData(buff, strlen(str));
+	
+	cout << "string = " << buff << "\n";
+
+	/*
 	int input;
 	unsigned int num, len;
 	string str;
@@ -89,8 +106,8 @@ int main()
 		}
 		
 	} while (input < 8);
-	
-	getchar();
+	*/
+	//getchar();
 	return 0;
 
 }

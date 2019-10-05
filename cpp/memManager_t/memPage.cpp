@@ -9,14 +9,14 @@ memPage::memPage()
 {
 	curr_pos = 0;
 	page_size = memManager::page_size;
-	page_string[0] = '\0';
+	page_string = new char[defualt_page_size];
 }
 
 memPage::memPage(unsigned int size)
 {
 	curr_pos = 0;
 	page_size = size;
-	page_string[0] = '\0';
+	page_string = new char[defualt_page_size];
 }
 
 unsigned int memPage::readData(void* buff, unsigned int length) const
@@ -28,9 +28,6 @@ unsigned int memPage::readData(void* buff, unsigned int length) const
 		return 0;
 	}
 	// case 2: there is data to read
-	//buff.assign(*page_string, curr_pos, length);
-	
-
 	return readData(buff, curr_pos, length);
 }
 unsigned int memPage::readData(void* buff, unsigned int position, unsigned int length) const
@@ -41,7 +38,6 @@ unsigned int memPage::readData(void* buff, unsigned int position, unsigned int l
 		return 0;
 	}
 	// case 2: there is data to read
-	//buff.assign(*page_string, position, length);
 	memcpy(buff, (void*)&(page_string[position]), length);
 
 	return strlen((char*)buff);
@@ -70,7 +66,7 @@ unsigned int memPage::writeData(const void* buff, unsigned int length, unsigned 
 	
 	return len;
 	*/
-	return 0;
+	return length;
 }
 
 bool memPage::setCurrPosition(unsigned int pos)
