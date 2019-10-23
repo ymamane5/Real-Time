@@ -1,19 +1,7 @@
 #include<string>
 #include "virtIO.h"
 #include "asciiIO.h"
-
-asciiIO& asciiIO::operator>>(int& num) // read
-{
-	if(m_mode == "r" || m_mode == "r+")
-	{
-		fscanf(m_fp, "%d", &num);
-	}
-	else
-		m_status = readEror;
-
-	return *this;
-}
-
+/*
 asciiIO& asciiIO::operator<<(int num)  // write
 {
 	if(m_mode == "w" || m_mode == "w+" || m_mode == "r+")
@@ -29,3 +17,4 @@ asciiIO& asciiIO::operator<<(int num)  // write
 
 	return *this;
 }
+*/
