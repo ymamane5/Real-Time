@@ -13,6 +13,8 @@ public:
 	virtIO() {};
 	~virtIO() { fclose(m_fp); };
 
+	template<class T>
+	int getFormat(T& val, char* f);
 	int open(string name, string mode);
 	string getPath() const { return m_path; };
 	virtual string getMode() const = 0;
@@ -37,5 +39,38 @@ private:
 	virtIO& operator=(const virtIO& v);
 
 };
+
+template<class T>
+int virtIO::getFormat(T& val, char* f)
+{
+	if (typeid(val) == typeid(int))
+	{
+		strcpy(f, "%d");
+	}
+	else if (typeid(val) == typeid(float))
+	{
+		strcpy(f, "%f");
+	}
+	else if (typeid(val) == typeid(char))
+	{
+		strcpy(f, "%c");
+	}
+	else if (typeid(val) == typeid(short))
+	{
+		strcpy(f, "%hi");
+	}
+	else if (typeid(val) == typeid(long))
+	{
+		strcpy(f, "%ld");
+	}
+	else if (typeid(val) == typeid(double))
+	{
+		strcpy(f, "%lf");
+	}
+	else
+		return -1;
+
+	return 1;
+}
 
 #endif
