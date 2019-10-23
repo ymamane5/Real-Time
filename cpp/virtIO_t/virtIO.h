@@ -3,23 +3,22 @@
 #ifndef VIRT
 #define VIRT
 
-//enum modeType {r, w, rplus, wplus}; // br, bw, brplus, bwplus
-enum statusType {ok, cant_open_file, bad_access, writeEror, readEror};
-
 using namespace std;
 
 class virtIO {
 
 public:
-	virtIO() {};
-	~virtIO() {};
+	enum statusType {ok, cant_open_file, bad_access, writeEror, readEror};
 
-	virtual int open(string name, string mode) = 0;
+	virtIO() {};
+	~virtIO() { fclose(m_fp); };
+
+	int open(string name, string mode);
 	string getPath() const { return m_path; };
-	string getMode() const { return m_mode; };
+	virtual string getMode() const = 0;
 	unsigned long fileLength() const;
 	unsigned long getPosition() const { return ftell(m_fp); };
-	void setPosition(unsigned long pos) { m_position = pos; };
+	void setPosition(unsigned long pos) { fseek(m_fp, pos, SEEK_SET); };
 
 
 protected:
@@ -29,8 +28,8 @@ protected:
 	string m_mode;
 	enum statusType m_status;
 
-	virtual virtIO& operator>>(int& num) = 0; // read
-	virtual virtIO& operator<<(int num) = 0;  // write
+	//virtual virtIO& operator>>(int& num) = 0; // read
+	//virtual virtIO& operator<<(int num) = 0;  // write
 
 
 private:

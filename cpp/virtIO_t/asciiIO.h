@@ -12,10 +12,10 @@ public:
 	asciiIO() {};
 	~asciiIO() {};
 
-	int open(string name, string mode);
-
-	virtIO& operator>>(int& num); // read
-	virtIO& operator<<(int num); // write
+	//int open(string name, string mode);
+	asciiIO& operator>>(int& num); // read
+	asciiIO& operator<<(int num); // write
+	string getMode() const { return m_mode; } 
 
 private:
 	asciiIO(const asciiIO& a);

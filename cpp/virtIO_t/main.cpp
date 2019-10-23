@@ -8,10 +8,16 @@ using namespace std;
 int main()
 {
 	asciiIO asciiOut;
+	string str;
+	int num;
 
-	asciiOut.open("test_file.txt", "w");
+	//cout << "enter string" << endl;
+	//cin >> str;
 
-	asciiOut << 5;
+	asciiOut.open("test_file.txt", "r+");
+
+	asciiOut >> num;
+	cout << "found: " << num << endl;
 
 	return 0;
 }
