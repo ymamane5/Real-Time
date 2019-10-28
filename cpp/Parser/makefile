@@ -1,14 +1,14 @@
-aprog: main.o asciiIO.o binIO.o virtIO.o
-	g++ main.o asciiIO.o binIO.o virtIO.o -g
+aprog: main.o parser.o tokenizer.o analizer.o
+	g++ main.o parser.o tokenizer.o analizer.o -g
 
 main.o: main.cpp
 	g++ -c main.cpp
 
-asciiIO.o: asciiIO.cpp asciiIO.h
-	g++ -c asciiIO.cpp -g
+parser.o: parser.cpp parser.h
+	g++ -c parser.cpp -g
 
-binIO.o: binIO.cpp binIO.h
-	g++ -c binIO.cpp -g
+tokenizer.o: tokenizer.cpp tokenizer.h
+	g++ -c tokenizer.cpp -g
 
-virtIO.o: virtIO.cpp virtIO.h
-	g++ -c virtIO.cpp -g
+analizer.o: analizer.cpp analizer.h
+	g++ -c analizer.cpp -g

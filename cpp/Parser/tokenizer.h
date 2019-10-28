@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -11,32 +12,31 @@ class tokenizer {
 public:
 	tokenizer() { tokens = new vector<string>; }
 	~tokenizer() {}
-	vector<string>& tokenize(string row);
+	vector<string>& tokenize(const string r);
 
 private:
-	vector<string> tokens;
+	vector<string> *tokens;
 
 	tokenizer(const tokenizer& t);
-	tokenizer& operator=(const tokenizer& t);
+	tokenizer operator=(const tokenizer& t) const;
 
 };
 
-vector<string>& tokenizer::tokenize(string row)
+vector<string>& tokenizer::tokenize(const string r)
 {
-	// stringstream class check1 
-    stringstream check1(line); 
-      
-    string intermediate; 
-      
-    // Tokenizing w.r.t. space ' ' 
-    while(getline(check1, intermediate, ' ')) 
-    { 
-        tokens.push_back(intermediate); 
-    } 
-      
-    // Printing the token vector 
-    for(int i = 0; i < tokens.size(); i++) 
-        cout << tokens[i] << '\n'; 
+	string row = r;
+	size_t pos = 0;
+	string token;
+
+	//cout << "in tokenize\n";
+
+	while ((pos = row.find(' ')) != string::npos) 
+	{
+	    token = row.substr(0, pos);
+	   // cout << "pos = " << pos << endl;
+	    cout << token << endl;
+	    row.erase(0, pos + 1);
+	}
 }
 
 #endif

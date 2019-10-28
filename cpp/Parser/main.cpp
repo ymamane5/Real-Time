@@ -10,6 +10,7 @@ using namespace std;
 int main(int argc, char const *argv[])
 {
 	parser p;
+	tokenizer t;
 
 	if(argc < 2)
 	{
@@ -18,6 +19,8 @@ int main(int argc, char const *argv[])
 	}
 
 	p.parse(string(argv[1]));
+	//string *s = new string("test string");
+	//t.tokenize(*s);
 	
 	return 0;
 }
