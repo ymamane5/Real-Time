@@ -2,7 +2,4 @@
 #include <string>
 #include "tokenizer.h"
 
-const vector<string>& tokenizer::delimiter(string row)
-{
-	
-}
+//const vector<string>& tokenizer::delimiter(string row)
