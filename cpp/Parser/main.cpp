@@ -19,8 +19,6 @@ int main(int argc, char const *argv[])
 	}
 
 	p.parse(string(argv[1]));
-	//string *s = new string("test string");
-	//t.tokenize(*s);
 	
 	return 0;
 }
