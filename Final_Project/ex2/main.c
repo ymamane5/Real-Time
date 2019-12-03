@@ -1,3 +1,4 @@
+/* Passing data between two threads using Queue (GAsyncQueue) */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
