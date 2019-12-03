@@ -9,24 +9,19 @@
 #include <linux/spinlock.h> /* for spinlock_t and ops on it */
 #include <linux/wait.h> /* for wait_queue_head_t and ops on it */
 #include <linux/list.h> /* for list */
+#include <linux/mutex.h>
+#include <linux/semaphore.h>
 #include "mq.h"
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Yaron");
-MODULE_DESCRIPTION("queue");
+MODULE_DESCRIPTION("message queues");
 
 #define DO_COPY
 
-static int pipes_count = 8;
+static int queue_max = 15;
+static int queue_count = 8;
 static int queue_size = PAGE_SIZE;
-
-/* struct for each pipe */
-struct my_pipe_t {
-	char *data;
-	size_t size;
-	size_t read_pos;
-	size_t write_pos;
-};
 
 struct list_node {
 	struct data_t* data;
@@ -37,9 +32,13 @@ struct queue_t {
 	struct list_node* head;
 	size_t size;
 	struct device* mq_device;
+	struct mutex lock;
+	wait_queue_head_t read_queue;
+	wait_queue_head_t write_queue;
+	int id;
 };
 
-static struct queue_t *queues;
+static struct queue_t *queue;
 /* this variable will store the class */
 static struct class *my_class;
 /* this variable will hold our cdev struct */
@@ -47,10 +46,9 @@ static struct cdev cdev;
 /* this is the first dev_t allocated to us... */
 static dev_t first_dev;
 
-// queue constructur
-static inline int queue_ctor(struct queue_t* queue)
+// queue constructor
+static inline int queue_ctor(struct queue_t* queue, int id)
 {
-	//queue = kmalloc(sizeof(queue_t), GFP_KERNEL);
 	queue->head = kmalloc(sizeof(struct list_node), GFP_KERNEL);
 	queue->head->data = kmalloc(sizeof(data_t), GFP_KERNEL);
 	queue->head->data->str = kmalloc(queue_size, GFP_KERNEL);
@@ -63,62 +61,130 @@ static inline int queue_ctor(struct queue_t* queue)
 		return -1;
 	}
 	queue->size = 0;
+	mutex_init(&queue->lock);
+	init_waitqueue_head(&queue->read_queue);
+	init_waitqueue_head(&queue->write_queue);
+	queue->id = id;
 	
 	return 0;
 }
 
-/* pipe destructor */
+/* mqueue destructor */
 static inline void queue_dtor(const struct queue_t* queue)
 {
-	
-	//kfree(queue->head.data.str);
+	struct list_head* iterator;
+	struct list_head* temp;
+	struct list_node* temp_node;
+
+	list_for_each_safe(iterator, temp, &queue->head->list)
+	{
+		temp_node = list_entry(iterator, struct list_node, list);
+		pr_info("%s freeing %s" ,THIS_MODULE->name, temp_node->data->str);
+		kfree(temp_node->data->str);
+		kfree(temp_node->data);
+		list_del(iterator);
+		kfree(temp_node);
+	}
+
+	mutex_destroy((struct mutex*)&queue->lock);
 }
 
 
 static int pipe_open(struct inode *inode, struct file *filp)
 {
 	/* hide the pipe in the private_data of the file_struct */
-	filp->private_data = queues+(iminor(inode)-MINOR(first_dev));
+	filp->private_data = queue+(iminor(inode)-MINOR(first_dev));
 	return 0;
+}
+
+static inline int my_list_not_full(void)
+{
+	int ret;
+
+	mutex_lock(&queue->lock);
+	ret = (queue->size < queue_max) ? 1 : 0;
+	if(!ret)
+	{
+		mutex_unlock(&queue->lock);
+	}
+	return ret;
+}
+
+static inline int my_list_not_empty(void)
+{
+	int ret;
+
+	mutex_lock(&queue->lock);
+	ret = !list_empty(&queue->head->list);
+	if(!ret)
+	{
+		mutex_unlock(&queue->lock);
+	}
+	return ret;
+
 }
 
 static long queue_ioctl(struct file* file, unsigned int cmd, unsigned long arg)
 {
 	int ret;
-	struct data_t data;
+	data_t data;
 	data_t* argp = (data_t*)arg;
 	char* my_buf;
 	struct list_node* new_node;
-	queues = file->private_data;
+	queue = file->private_data;
+	//pr_info("%s inside ioctl\ncmd = %d", THIS_MODULE->name, cmd);
+	//pr_info("%s queue num %d", THIS_MODULE->name, queue->id);
 
-	pr_info("%s inside kernel ioctl\n", THIS_MODULE->name);
-	pr_info("%s cmd = %d\n", THIS_MODULE->name, cmd);
 	switch(cmd) {
 		case QUEUE_WRITE:
-			ret=copy_from_user(&data, argp, sizeof(data));
+			pr_info("%s inside write\n", THIS_MODULE->name);
+			ret = copy_from_user(&data, argp, sizeof(data));
 			if(ret) {
 				pr_err("%s: had problems with copy_from_user\n", THIS_MODULE->name);
+				mutex_unlock(&queue->lock);
 				return ret;
 			}
 			my_buf=(char*)kmalloc(data.size, GFP_KERNEL);
-			copy_from_user(my_buf, data.str, data.size);
-
+			if(my_buf == NULL) {
+				pr_err("%s kmalloc\n", THIS_MODULE->name);
+				mutex_unlock(&queue->lock);
+				return -1;
+			}
+			ret = copy_from_user(my_buf, data.str, data.size);
+			if(ret) {
+				pr_err("%s: had problems with copy_from_user\n", THIS_MODULE->name);
+				mutex_unlock(&queue->lock);
+				return ret;
+			}
+			my_buf[data.size] = 0;
 			new_node = kmalloc(sizeof(struct list_node), GFP_KERNEL);
 			new_node->data = kmalloc(sizeof(data_t), GFP_KERNEL);
 			new_node->data->size = data.size;
 			new_node->data->str = my_buf;
-			pr_info("%s copy_from_user recieved: %s\n", THIS_MODULE->name, my_buf);
-			list_add_tail(&new_node->list, &queues->head->list);
+			pr_info("%s recieved: %s\n", THIS_MODULE->name, my_buf);
+			wait_event_interruptible(queue->write_queue, my_list_not_full());
+			list_add(&new_node->list, &queue->head->list);
+			queue->size++;
+			wake_up_interruptible(&queue->read_queue);
+			mutex_unlock(&queue->lock);
+			pr_info("%s queue size = %ld\n", THIS_MODULE->name, queue->size);
 			break;
 		case QUEUE_READ:
-			new_node = list_entry(queues->head->list.prev, struct list_node, list);
-			pr_info("%s data to read: %s\n", THIS_MODULE->name, new_node->data->str);
+			pr_info("%s inside read\n", THIS_MODULE->name);
+			wait_event_interruptible(queue->read_queue, my_list_not_empty());
+			new_node = list_entry(queue->head->list.prev, struct list_node, list);
+			list_del(&new_node->list);
+			queue->size--;
+			wake_up_interruptible(&queue->write_queue);
+			mutex_unlock(&queue->lock);
 			ret=copy_to_user((char*)arg, new_node->data->str, strlen(new_node->data->str));
 			if(ret) {
 				pr_err("%s: had problems with copy_to_user\n", THIS_MODULE->name);
+				mutex_unlock(&queue->lock);
 				return ret;
 			}
-			list_del(&new_node->list);
+			pr_info("%s sent: %s\n", THIS_MODULE->name, new_node->data->str);
+			pr_info("%s queue size = %ld\n", THIS_MODULE->name, queue->size);
 			kfree(new_node->data->str);
 			kfree(new_node->data);
 			kfree(new_node);
@@ -142,42 +208,37 @@ static int __init queue_init(void)
 	int ret, i ,j;
 	
 	// allocate all queues
-	pr_info("allocating queues\n");
-	queues = kmalloc(sizeof(struct queue_t)*pipes_count, GFP_KERNEL);
-	if (IS_ERR(queues)) {
+	queue = kmalloc(sizeof(struct queue_t)*queue_count, GFP_KERNEL);
+	if (IS_ERR(queue)) {
 		pr_err("kmalloc\n");
-		ret = PTR_ERR(queues);
+		ret = PTR_ERR(queue);
 		goto err_return;
 	}
 	
 	// initialize all queues 
-	pr_info("initialize queues\n");
-	for (i = 0; i < pipes_count; i++) {
-		ret = queue_ctor(queues+i);
+	for (i = 0; i < queue_count; i++) {
+		ret = queue_ctor(queue+i, i);
 		if (ret) {
 			for (j = 0; j < i; j++)
-				queue_dtor(queues+j);
+				queue_dtor(queue+j);
 			goto err_pipes;
 		}
 	}
 	
 	// allocate our own range of devices
-	pr_info("alloc_chrdev_region\n");
-	ret = alloc_chrdev_region(&first_dev, 0, pipes_count,
+	ret = alloc_chrdev_region(&first_dev, 0, queue_count,
 			THIS_MODULE->name);
 	if (ret) {
 		pr_err("cannot alloc_chrdev_region\n");
 		goto err_pipes_ctor;
 	}
-	pr_info("allocated the region\n");
 	// add the cdev structure 
 	cdev_init(&cdev, &pipe_fops);
-	ret = cdev_add(&cdev, first_dev, pipes_count);
+	ret = cdev_add(&cdev, first_dev, queue_count);
 	if (ret) {
 		pr_err("cannot cdev_add\n");
 		goto err_dealloc;
 	}
-	pr_info("added the cdev\n");
 	// this is creating a new class (/proc/devices)
 	my_class = class_create(THIS_MODULE, THIS_MODULE->name);
 	if (IS_ERR(my_class)) {
@@ -185,10 +246,8 @@ static int __init queue_init(void)
 		ret = PTR_ERR(my_class);
 		goto err_cdev_del;
 	}
-	pr_info("created the class\n");
-	for (i = 0; i < pipes_count; i++) {
+	for (i = 0; i < queue_count; i++) {
 		// and now lets auto-create a /dev/ node
-
 		mq_device = device_create(my_class,   // queues[i].mq_device
 				NULL,
 				MKDEV(MAJOR(first_dev), MINOR(first_dev)+i),
@@ -208,12 +267,12 @@ err_class:
 err_cdev_del:
 	cdev_del(&cdev);
 err_dealloc:
-	unregister_chrdev_region(first_dev, pipes_count);
+	unregister_chrdev_region(first_dev, queue_count);
 err_pipes_ctor:
-	for (i = 0; i < pipes_count; i++)
-		queue_dtor(queues+i);
+	for (i = 0; i < queue_count; i++)
+		queue_dtor(queue+i);
 err_pipes:
-	kfree(queues);
+	kfree(queue);
 err_return:
 	return ret;
 	
@@ -223,15 +282,15 @@ static void __exit queue_exit(void)
 {
 	
 	int i;
-	for (i = 0; i < pipes_count; i++)
+	for (i = 0; i < queue_count; i++)
 		device_destroy(my_class, MKDEV(MAJOR(first_dev),
 				MINOR(first_dev)+i));
 	class_destroy(my_class);
 	cdev_del(&cdev);
-	unregister_chrdev_region(first_dev, pipes_count);
-	for (i = 0; i < pipes_count; i++)
-		queue_dtor(queues+i);
-	kfree(queues);
+	unregister_chrdev_region(first_dev, queue_count);
+	for (i = 0; i < queue_count; i++)
+		queue_dtor(queue+i);
+	kfree(queue);
 	pr_info("%s unloaded successfully\n", THIS_MODULE->name);
 }
 
